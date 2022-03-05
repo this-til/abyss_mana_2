@@ -11,40 +11,40 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
     /***
      * 返回最大容量
      */
-    int getMaxMana();
+    long getMaxMana();
 
     /***
      * 返回当前容量
      */
-    int getMana();
+    long getMana();
 
     /***
      * 返回剩余空间
      */
-    default int getRemainMana() {
+    default long getRemainMana() {
         return Math.max(this.getMaxMana() - this.getMana(), 0);
     }
 
     /***
      * 返回最大的提取速度
      */
-    int getMaxRate();
+    long getMaxRate();
 
     /***
      * 添加灵气
      * 返返回加入了多少
      */
-    int addMana(int mana);
+    long addMana(long mana);
 
     /***
      *  抽取灵气
      *  返回提取了多少
      */
-    int extractMana(int demand);
+    long extractMana(long demand);
 
     class ManaHandle implements IManaHandle {
 
-        public int mana;
+        public long mana;
         public final TileEntity tileEntity;
         public final IManaLevel iManaLevel;
 
@@ -57,15 +57,15 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
          * 返回最大容量
          */
         @Override
-        public int getMaxMana() {
-            return 160000 * getManaLevel().manaLevelData.getMaxManaContainer();
+        public long getMaxMana() {
+            return 160000 * getManaLevel().getMaxManaContainer();
         }
 
         /***
          * 返回当前容量
          */
         @Override
-        public int getMana() {
+        public long getMana() {
             return mana;
         }
 
@@ -73,8 +73,8 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
          * 返回最大的提取速度
          */
         @Override
-        public int getMaxRate() {
-            return 32 * ManaLevel.getLevel(getThis().getBlockType()).manaLevelData.getMaxManaContainer();
+        public long getMaxRate() {
+            return 32 * ManaLevel.getLevel(getThis().getBlockType()).getMaxManaContainer();
         }
 
         /***
@@ -82,11 +82,11 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
          * 返返回加入了多少
          */
         @Override
-        public int addMana(int mana) {
+        public long addMana(long mana) {
             if (mana == 0) {
                 return 0;
             }
-            int addMana = Math.min(Math.min(mana, this.getMaxRate()), this.getRemainMana());
+            long addMana = Math.min(Math.min(mana, this.getMaxRate()), this.getRemainMana());
             this.mana += addMana;
             return addMana;
         }
@@ -96,11 +96,11 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
          *  返回提取了多少
          */
         @Override
-        public int extractMana(int demand) {
+        public long extractMana(long demand) {
             if (demand == 0) {
                 return 0;
             }
-            int extractMana = Math.min(Math.min(demand, this.getMaxRate()), this.getMana());
+            long extractMana = Math.min(Math.min(demand, this.getMaxRate()), this.getMana());
             this.mana -= extractMana;
             return extractMana;
         }

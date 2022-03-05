@@ -44,7 +44,7 @@ public class JEI_interact implements IModPlugin {
     public void register(IModRegistry registry) {
 
         Map<String, List<ShapedRecipeWrapper>> map = new Map<>();
-        Shaped.register.forEach(s -> map.get(Objects.requireNonNull(s.shapedType.getRegistryName()).toString(), ArrayList::new).add(new ShapedRecipeWrapper(s)));
+        Shaped.register.forEach(s -> map.get(Objects.requireNonNull(s.getShapedType().getRegistryName()).toString(), ArrayList::new).add(new ShapedRecipeWrapper(s)));
         map.forEach((k, v) -> {
             registry.addRecipes(v, k);
         });
@@ -191,7 +191,7 @@ public class JEI_interact implements IModPlugin {
         @Override
         public void getIngredients(IIngredients ingredients) {
             hoverCheckerMap.clear();
-            Shaped.IJEIShaped ijeiShaped = shaped.shapedStack.getIJEIShaped();
+            Shaped.IJEIShaped ijeiShaped = shaped.getIJEIShaped();
             List<List<ItemStack>> itemIn = ijeiShaped.getItemIn();
             if (itemIn != null) {
                 ingredients.setInputLists(VanillaTypes.ITEM, itemIn);
@@ -216,16 +216,16 @@ public class JEI_interact implements IModPlugin {
             if (buttonHoverChecker.checkHover(mouseX, mouseY)) {
                 tooltipStrings.add(Lang.getLang("message"));
 
-                tooltipStrings.add(Lang.getLang("use.mana.level") + Objects.requireNonNull(shaped.manaLevel.getRegistryName()).getResourcePath());
-                tooltipStrings.add(Lang.getLang("use.shaped.drive") + ShapedDrive.map.getKey(shaped.shapedDrive));
-                if (shaped.shapedStack.consumeMana() > 0) {
-                    tooltipStrings.add(Lang.getLang("consume.mana") + shaped.shapedStack.consumeMana());
+                tooltipStrings.add(Lang.getLang("use.mana.level") + Lang.getLang(shaped.getManaLevel()));
+                tooltipStrings.add(Lang.getLang("use.shaped.drive") + ShapedDrive.map.getKey(shaped.getShapedDrive()));
+                if (shaped.consumeMana() > 0) {
+                    tooltipStrings.add(Lang.getLang("consume.mana") + shaped.consumeMana());
                 }
-                if (shaped.shapedStack.surplusTiem() > 0) {
-                    tooltipStrings.add(Lang.getLang("consume.time") + shaped.shapedStack.surplusTiem());
+                if (shaped.surplusTiem() > 0) {
+                    tooltipStrings.add(Lang.getLang("consume.time") + shaped.surplusTiem());
                 }
-                if (shaped.shapedStack.getOutMana() > 0) {
-                    tooltipStrings.add(Lang.getLang("out.mana") + shaped.shapedStack.getOutMana());
+                if (shaped.getOutMana() > 0) {
+                    tooltipStrings.add(Lang.getLang("out.mana") + shaped.getOutMana());
                 }
             }
             return tooltipStrings;

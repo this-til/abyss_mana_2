@@ -125,7 +125,7 @@ public class CommonProxy {
         ManaLevelBlock.register = new RegistryBuilder<ManaLevelBlock>().setName(new ResourceLocation(AbyssMana2.MODID, "mana_level_block_map")).setType(ManaLevelBlock.class).create();
         BindType.register = new RegistryBuilder<BindType>().setName(new ResourceLocation(AbyssMana2.MODID, "bund_type_map")).setType(BindType.class).create();
         Shaped.register = new RegistryBuilder<Shaped>().setName(new ResourceLocation(AbyssMana2.MODID, "shaped_z")).setType(Shaped.class).addCallback((IForgeRegistry.AddCallback<Shaped>) (owner, stage, id, shaped, oldObj) -> {
-            Shaped.map.get(shaped.shapedType, Map::new).get(shaped.shapedDrive, List::new).add(shaped);
+            Shaped.map.get(shaped.getShapedType(), Map::new).get(shaped.getShapedDrive(), List::new).add(shaped);
         }).create();
         ShapedDrive.register = new RegistryBuilder<ShapedDrive>().setName(new ResourceLocation(AbyssMana2.MODID, "shaped_provide_map")).setType(ShapedDrive.class).create();
         ShapedType.register = new RegistryBuilder<ShapedType>().setName(new ResourceLocation(AbyssMana2.MODID, "shaped_Type_map")).setType(ShapedType.class).create();

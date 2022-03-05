@@ -1,3 +1,15 @@
+#ManaLevel
+abyss_mana_2.t1.name=T1
+abyss_mana_2.t2.name=T2
+abyss_mana_2.t3.name=T3
+abyss_mana_2.t4.name=T4
+abyss_mana_2.t5.name=T5
+abyss_mana_2.t6.name=T6
+abyss_mana_2.t7.name=T7
+abyss_mana_2.t8.name=T8
+abyss_mana_2.t9.name=T9
+abyss_mana_2.t10.name=T10
+
 #OreType
 abyss_mana_2.ingot.name=锭
 abyss_mana_2.infiltration_ingot.name=浸魔锭
@@ -30,9 +42,17 @@ abyss_mana_2.cat.name=猫
 abyss_mana_2.dog.name=狗
 abyss_mana_2.void_glow.name=虚空辉光
 
-#ShapedType
-abyss_mana_2.grind.name=研磨配方
-abyss_mana_2.extract_mana.name=灵气提取配方
+#ShapedType and ManaLevelBlock
+abyss_mana_2.grind.name=研磨晶体
+abyss_mana_2.extract_mana.name=灵气提取晶体
+abyss_mana_2.wash.name=洗涤晶体
+abyss_mana_2.centrifugal.name=离心晶体
+abyss_mana_2.pack.name=打包晶体
+abyss_mana_2.unpack.name=解包晶体
+
+#ManaLevelBlock
+abyss_mana_2.repeater.name=能力中继器晶体
+abyss_mana_2.whirl_boost.name=回旋升压晶体
 
 #BindType
 abyss_mana_2.item_in.name=物品输入

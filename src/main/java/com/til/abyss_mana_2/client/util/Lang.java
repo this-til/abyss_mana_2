@@ -2,8 +2,6 @@ package com.til.abyss_mana_2.client.util;
 
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.register.Ore;
-import com.til.abyss_mana_2.common.register.OreBlock;
-import com.til.abyss_mana_2.common.register.OreType;
 import com.til.abyss_mana_2.common.register.RegisterBasics;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagString;
@@ -16,15 +14,11 @@ import java.util.Objects;
 @Mod.EventBusSubscriber(value = Side.CLIENT)
 public class Lang {
 
-    public static String getLang(Ore ore, OreType oreType) {
-        return (I18n.format(Objects.requireNonNull(ore.getRegistryName()).getResourceDomain() + "." + ore.getRegistryName().getResourcePath() + ".name") +
-                I18n.format(Objects.requireNonNull(oreType.getRegistryName()).getResourceDomain() + "." + oreType.getRegistryName().getResourcePath() + ".name")).trim();
+    public static String getLang(RegisterBasics<?> registerBasics, RegisterBasics<?> registerBasics1) {
+        return (I18n.format(Objects.requireNonNull(registerBasics.getRegistryName()).getResourceDomain() + "." + registerBasics.getRegistryName().getResourcePath() + ".name") +
+                I18n.format(Objects.requireNonNull(registerBasics1.getRegistryName()).getResourceDomain() + "." + registerBasics1.getRegistryName().getResourcePath() + ".name")).trim();
     }
 
-    public static String getLang(Ore ore, OreBlock oreBlock) {
-        return (I18n.format(Objects.requireNonNull(ore.getRegistryName()).getResourceDomain() + "." + ore.getRegistryName().getResourcePath() + ".name") +
-                I18n.format(Objects.requireNonNull(oreBlock.getRegistryName()).getResourceDomain() + "." + oreBlock.getRegistryName().getResourcePath() + ".name")).trim();
-    }
 
     public static String getOreBlockLang(Ore ore) {
         return (I18n.format(Objects.requireNonNull(ore.getRegistryName()).getResourceDomain() + "." + ore.getRegistryName().getResourcePath() + ".name") +

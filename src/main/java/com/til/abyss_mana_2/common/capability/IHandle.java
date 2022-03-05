@@ -49,7 +49,8 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
     /***
      * 获取最大配方并行
      */
-    int getMaxParallel();
+    int getParallelHandle();
+
 
     List<ShapedDrive> getShapedDrive();
 
@@ -132,7 +133,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                 });
                 rShapedHandle.forEach(r -> shapedHandles.remove(r));
 
-                if (shapedHandles.size() >= getMaxParallel()) {
+                if (shapedHandles.size() >= getParallelHandle()) {
                     return;
                 }
 
@@ -159,7 +160,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                     }
 
                     for (Shaped shaped : shapeds) {
-                        shapedHandle = shaped.shapedStack.get(this, getManaLevel(), itemIn, fluidIn);
+                        shapedHandle = shaped.get(this, getManaLevel(), itemIn, fluidIn);
                         if (shapedHandle != null) {
                             addShapedHandle(shapedHandle);
                             break;
@@ -168,7 +169,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                         }
                     }
                 }
-                while (shapedHandle != null && shapedHandles.size() < getManaLevel().manaLevelData.getLevel());
+                while (shapedHandle != null && shapedHandles.size() < getParallelHandle());
 
             }
         }
@@ -198,12 +199,12 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
 
         @Override
         public int getMaxClockTime() {
-            return getManaLevel().manaLevelData.getClockTime();
+            return getManaLevel().getClockTime();
         }
 
         @Override
-        public int getMaxParallel() {
-            return getManaLevel().manaLevelData.getLevel();
+        public int getParallelHandle() {
+            return getManaLevel().getLevel();
         }
 
         /***
@@ -272,9 +273,10 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
 
     class ShapedHandle {
 
-        public final int surplusTiem;
-        public final int consumeMana;
-        public int _surplusTiem;
+        public final long consumeMana;
+
+        public final long surplusTiem;
+        public long _surplusTiem;
 
         public Process process;
 
@@ -282,9 +284,9 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         public List<ItemStack> outItem;
         @Nullable
         public List<FluidStack> outFuid;
-        public int outMana;
+        public long outMana;
 
-        public ShapedHandle(int surplusTiem, int consumeMana, int outMana, @Nullable List<ItemStack> outItemStack, @Nullable List<FluidStack> outFuid) {
+        public ShapedHandle(long surplusTiem, long consumeMana, long outMana, @Nullable List<ItemStack> outItemStack, @Nullable List<FluidStack> outFuid) {
             this.surplusTiem = surplusTiem;
             this.consumeMana = consumeMana;
             this.outMana = outMana;
@@ -295,9 +297,9 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         }
 
         public ShapedHandle(NBTTagCompound nbtTagCompound) {
-            surplusTiem = nbtTagCompound.getInteger("surplusTiem");
-            consumeMana = nbtTagCompound.getInteger("consumeMana");
-            _surplusTiem = nbtTagCompound.getInteger("_surplusTiem");
+            surplusTiem = nbtTagCompound.getLong("surplusTiem");
+            consumeMana = nbtTagCompound.getLong("consumeMana");
+            _surplusTiem = nbtTagCompound.getLong("_surplusTiem");
             process = Process.MAP.get(nbtTagCompound.getString("process"));
             if (process == null) {
                 process = Process.production;
@@ -328,15 +330,15 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                     }
                 }
             }
-            outMana = nbtTagCompound.getInteger("outMana");
+            outMana = nbtTagCompound.getLong("outMana");
         }
 
         public NBTTagCompound serializeNBT() {
             NBTTagCompound nbtTagCompound = new NBTTagCompound();
 
-            nbtTagCompound.setInteger("surplusTiem", surplusTiem);
-            nbtTagCompound.setInteger("consumeMana", consumeMana);
-            nbtTagCompound.setInteger("_surplusTiem", _surplusTiem);
+            nbtTagCompound.setLong("surplusTiem", surplusTiem);
+            nbtTagCompound.setLong("consumeMana", consumeMana);
+            nbtTagCompound.setLong("_surplusTiem", _surplusTiem);
             nbtTagCompound.setString("process", process.toString());
 
             if (outItem != null && !outItem.isEmpty()) {
@@ -355,7 +357,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                 nbtTagCompound.setTag("outFuid", _outFuid);
             }
 
-            nbtTagCompound.setInteger("outMana", outMana);
+            nbtTagCompound.setLong("outMana", outMana);
 
             return nbtTagCompound;
         }
@@ -396,9 +398,9 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
 
         static {
             upRun.put(Process.production, (c, shapedHandle, inMana, outMana) -> {
-                int needGetMana = shapedHandle.consumeMana;
+                long needGetMana = shapedHandle.consumeMana;
                 for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : inMana.entrySet()) {
-                    int mana = tileEntityIManaHandleEntry.getValue().extractMana(needGetMana);
+                    long mana = tileEntityIManaHandleEntry.getValue().extractMana(needGetMana);
                     needGetMana = needGetMana - mana;
                     if (rand.nextFloat() < mana / 128f) {
                         CommonParticle.MANA_TRANSFER.add(c.getThis().getWorld(), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new Pos(c.getThis().getPos()), new JsonObject());
@@ -417,7 +419,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
             upRun.put(Process.out, (c, shapedHandle, inMana, outMana) -> {
                 if (shapedHandle.outMana > 0) {
                     for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : outMana.entrySet()) {
-                        int mana = tileEntityIManaHandleEntry.getValue().addMana(shapedHandle.outMana);
+                        long mana = tileEntityIManaHandleEntry.getValue().addMana(shapedHandle.outMana);
                         shapedHandle.outMana = shapedHandle.outMana - mana;
                         if (rand.nextFloat() < mana / 128f) {
                             CommonParticle.MANA_TRANSFER.add(c.getThis().getWorld(), new Pos(c.getThis().getPos()), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new JsonObject());
@@ -484,7 +486,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         }
 
         public static class EmptyShapedHandle extends ShapedHandle {
-            public EmptyShapedHandle(int surplusTiem, int consumeMana, int outMana) {
+            public EmptyShapedHandle(long surplusTiem, long consumeMana, long outMana) {
                 super(surplusTiem, consumeMana, outMana, null, null);
                 process = Process.out;
             }

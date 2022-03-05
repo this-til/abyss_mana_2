@@ -36,7 +36,7 @@ public class AllNBT {
     public static final IModDataMessage<PlayerMessage.MessageData> playerMessage = new PlayerMessage();
     public static final IModDataMessage<String> keyMessage = new KeyMessage();
 
-    public static final IGS<Integer> modMana = new IGS.IntNBT("modMana");
+    public static final IGS<Long> modMana = new IGS.LongNBT("modMana");
 
     public static final IGS<NBTTagList> listBlockPosNBTLong = new IGS.ListNBT("listBlockPosNBTLong");
     public static final IGS<List<BlockPos>> blockPos = new IGS.ListBlockPosNBT("blockPos");
@@ -100,7 +100,7 @@ public class AllNBT {
 
         boolean deathRetainData();
 
-        abstract static class BasicsNBT<V> implements IGS<V> {
+        abstract class BasicsNBT<V> implements IGS<V> {
 
             String name;
 
@@ -203,6 +203,23 @@ public class AllNBT {
             @Override
             public void set(NBTTagCompound nbt, Integer v) {
                 nbt.setInteger(name, v);
+            }
+        }
+
+        class LongNBT extends BasicsNBT<Long> {
+
+            public LongNBT(String name) {
+                super(name);
+            }
+
+            @Override
+            public Long get(NBTTagCompound nbt) {
+                return nbt.getLong(name);
+            }
+
+            @Override
+            public void set(NBTTagCompound nbt, Long v) {
+                nbt.setLong(name, v);
             }
         }
 

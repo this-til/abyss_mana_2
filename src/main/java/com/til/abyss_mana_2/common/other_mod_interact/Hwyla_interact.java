@@ -57,7 +57,7 @@ public class Hwyla_interact {
             if (iHandle != null) {
                 NBTTagCompound nbtTagCompound = iHandle.serializeNBT();
                 nbtTagCompound.setInteger("maxClockTime", iHandle.getMaxClockTime());
-                nbtTagCompound.setInteger("maxParallel", iHandle.getMaxParallel());
+                nbtTagCompound.setInteger("maxParallel", iHandle.getParallelHandle());
                 {
                     NBTTagList shapedDriveNBT = new NBTTagList();
                     iHandle.getShapedDrive().forEach(i -> shapedDriveNBT.appendTag(new NBTTagInt(ShapedDrive.map.getKey(i))));
@@ -73,9 +73,9 @@ public class Hwyla_interact {
 
             if (iManaHandle != null) {
                 NBTTagCompound nbtTagCompound = new NBTTagCompound();
-                nbtTagCompound.setInteger("now", iManaHandle.getMana());
-                nbtTagCompound.setInteger("max", iManaHandle.getMaxMana());
-                nbtTagCompound.setInteger("rate", iManaHandle.getMaxRate());
+                nbtTagCompound.setLong("now", iManaHandle.getMana());
+                nbtTagCompound.setLong("max", iManaHandle.getMaxMana());
+                nbtTagCompound.setLong("rate", iManaHandle.getMaxRate());
                 tag.setTag("iManaHandle", nbtTagCompound);
             }
 

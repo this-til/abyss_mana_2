@@ -146,15 +146,15 @@ public class ClientProxy extends CommonProxy {
         for (ManaLevel manaLevel : ManaLevel.register) {
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 ManaLevelItem oreType = manaLevel.item.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.manaLevelData.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
             }, manaLevel.item.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 ManaLevelBlock oreType = manaLevel.itemBlock.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.manaLevelData.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
             }, manaLevel.itemBlock.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
                 ManaLevelBlock oreType = manaLevel.block.getKey(state.getBlock());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.manaLevelData.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
             }, manaLevel.block.values().toArray(new Block[0]));
         }
 

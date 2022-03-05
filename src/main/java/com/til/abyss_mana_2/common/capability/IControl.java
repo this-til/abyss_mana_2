@@ -104,7 +104,7 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
             if (new Pos(tileEntity.getPos()).getDistance(new Pos(tileEntity.getPos())) > getMaxRange()) {
                 return new PlayerMessage.MessageData(true, "绑定失败，方块距离超过限制.name");
             }
-            if (list.size() >= getManaLevel().manaLevelData.getMaxBind()) {
+            if (list.size() >= getMaxBind()) {
                 return new PlayerMessage.MessageData(true, "绑定失败，已达到绑定类型{0}的最大绑定数量.name", Objects.requireNonNull(iBindType.getRegistryName()).toString());
             }
             if (this.getAllTileEntity(iBindType).contains(tileEntity)) {
@@ -171,7 +171,7 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
          */
         @Override
         public int getMaxBind() {
-            return getManaLevel().manaLevelData.getMaxBind();
+            return getManaLevel().getMaxBind();
         }
 
         @Override

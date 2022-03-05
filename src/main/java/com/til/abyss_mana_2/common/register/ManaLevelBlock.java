@@ -86,6 +86,11 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
     public static Mechanics repeater;
 
     /***
+     * 回旋升压
+     */
+    public static Mechanics whirlBoost;
+
+    /***
      * 研磨
      */
     public static Mechanics grind;
@@ -109,6 +114,16 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
      * 离心
      */
     public static Mechanics centrifugal;
+
+    /***
+     * 打包
+     */
+    public static ManaLevelBlock pack;
+
+    /***
+     * 解包
+     */
+    public static ManaLevelBlock unpack;
 
     public static void init() {
         repeater = (Mechanics) new Mechanics("repeater") {
@@ -158,6 +173,8 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
                 return super.registerTileEntity().add_chainable(RepeaterTile.class);
             }
         }.setOrePrefix("Repeater");
+        whirlBoost = (Mechanics) new Mechanics("whirl_boost").setOrePrefix("WhirlBoost");
+
         grind = (Mechanics) new Mechanics("grind") {
             @Override
             public Block getBlock(ManaLevel manaLevel) {
@@ -241,6 +258,40 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
                 return super.registerTileEntity().add_chainable(RunTileEntity.Centrifugal.class);
             }
         }.setOrePrefix("Centrifugal");
+        pack = (Mechanics) new Mechanics("pack") {
+            @Override
+            public Block getBlock(ManaLevel manaLevel) {
+                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
+                    @Override
+                    public TileEntity createNewTileEntity(World worldIn, int meta) {
+                        return new RunTileEntity.Pack();
+                    }
+                }.setLightLevel(1).setLightOpacity(0);
+
+            }
+
+            @Override
+            public List<Class<? extends TileEntity>> registerTileEntity() {
+                return super.registerTileEntity().add_chainable(RunTileEntity.Pack.class);
+            }
+        }.setOrePrefix("Pack");
+        unpack = (Mechanics) new Mechanics("unpack") {
+            @Override
+            public Block getBlock(ManaLevel manaLevel) {
+                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
+                    @Override
+                    public TileEntity createNewTileEntity(World worldIn, int meta) {
+                        return new RunTileEntity.UnPack();
+                    }
+                }.setLightLevel(1).setLightOpacity(0);
+
+            }
+
+            @Override
+            public List<Class<? extends TileEntity>> registerTileEntity() {
+                return super.registerTileEntity().add_chainable(RunTileEntity.UnPack.class);
+            }
+        }.setOrePrefix("UnPack");
     }
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -313,6 +364,22 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         }
 
         public static class Centrifugal extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.centrifugal;
+            }
+        }
+
+        public static class UnPack extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.centrifugal;
+            }
+        }
+
+        public static class Pack extends RunTileEntity {
 
             @Override
             public ShapedType getShapedType() {

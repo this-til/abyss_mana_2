@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @EventInteractClassTag(modID = "waila", value = Side.CLIENT)
 public class Hwyla_interact {
@@ -59,7 +58,7 @@ public class Hwyla_interact {
                 if (manaLevel == null) {
                     manaLevel = ManaLevel.T1;
                 }
-                tooltip.add(Lang.getLang("mana.level") + Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath());
+                tooltip.add(Lang.getLang("mana.level") + Lang.getLang(manaLevel));
             }
 
             if (nbtTagCompound.hasKey("iHandle")) {
@@ -126,8 +125,8 @@ public class Hwyla_interact {
             if (nbtTagCompound.hasKey("iManaHandle")) {
                 NBTTagCompound iManaHandle = nbtTagCompound.getCompoundTag("iManaHandle");
                 tooltip.add(Lang.getLang("mana.handel"));
-                tooltip.add("   " + MessageFormat.format(Lang.getLang("now.mana.handel"), iManaHandle.getInteger("now"), iManaHandle.getInteger("max")));
-                tooltip.add("   " + Lang.getLang("rate.mana.handel") + iManaHandle.getInteger("rate"));
+                tooltip.add("   " + MessageFormat.format(Lang.getLang("now.mana.handel"), iManaHandle.getLong("now"), iManaHandle.getLong("max")));
+                tooltip.add("   " + Lang.getLang("rate.mana.handel") + iManaHandle.getLong("rate"));
             }
 
             if (nbtTagCompound.hasKey("iShapedDrive")) {
