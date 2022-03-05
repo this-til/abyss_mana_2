@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "abyss_mana_2:item/crushed_0",
+    "layer1": "abyss_mana_2:item/crushed_1"
+  }
+}

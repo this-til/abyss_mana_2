@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "abyss_mana_2",
+    "name": "abyss_mana_2",
+    "description": "It's abyss magic",
+    "version": "1.0",
+    "mcversion": "1.12.2",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "til,HTOD"
+    ],
+    "credits": "The Forge and FML guys, for making this example",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

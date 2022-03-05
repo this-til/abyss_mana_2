@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "mana_solution": {
+      "model": "forge:fluid",
+      "textures": {
+        "base": "forge:items/bucket_base",
+        "fluid": "forge:items/bucket_fluid",
+        "cover": "forge:items/bucket_cover"
+      },
+      "custom": {
+        "fluid": "mana_solution_solid_mana",
+        "flipGas": true,
+        "applyTint": false
+      }
+    }
+  }
+}
+

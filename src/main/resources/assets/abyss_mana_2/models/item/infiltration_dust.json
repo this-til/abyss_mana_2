@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "abyss_mana_2:item/dust",
+    "layer1": "abyss_mana_2:item/mana_luminescence"
+  }
+}

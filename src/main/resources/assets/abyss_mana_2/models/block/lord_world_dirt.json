@@ -1,0 +1,8 @@
+{
+  "parent": "abyss_mana_2:block/cube_ore_all",
+  "textures": {
+    "all0": "minecraft:blocks/dirt",
+    "all1": "abyss_mana_2:block/ore_textures",
+    "particle": "minecraft:blocks/dirt"
+  }
+}

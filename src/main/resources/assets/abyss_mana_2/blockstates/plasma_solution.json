@@ -1,0 +1,18 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "plasma_solution": {
+      "model": "forge:fluid",
+      "textures": {
+        "base": "forge:items/bucket_base",
+        "fluid": "forge:items/bucket_fluid",
+        "cover": "forge:items/bucket_cover"
+      },
+      "custom": {
+        "fluid": "plasma_solution_solid_mana",
+        "flipGas": true,
+        "applyTint": true
+      }
+    }
+  }
+}

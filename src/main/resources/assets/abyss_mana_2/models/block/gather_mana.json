@@ -1,0 +1,9 @@
+{
+  "parent": "abyss_mana_2:custom/gather_mana/gather_mana",
+  "textures": {
+    "textures0": "abyss_mana_2:block/black",
+    "textures1": "abyss_mana_2:block/white",
+    "textures2": "abyss_mana_2:block/white_0",
+    "particle": "abyss_mana_2:block/white"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "staff": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "abyssmana:staff",
+        "stream": true
+      }
+    ]
+  }
+}

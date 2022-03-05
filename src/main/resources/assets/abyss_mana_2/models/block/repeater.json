@@ -1,0 +1,8 @@
+{
+  "parent": "abyss_mana_2:custom/repeater/repeater",
+  "textures": {
+    "textures0": "abyss_mana_2:block/black",
+    "textures1": "abyss_mana_2:block/white_0",
+    "particle": "abyss_mana_2:block/white"
+  }
+}
