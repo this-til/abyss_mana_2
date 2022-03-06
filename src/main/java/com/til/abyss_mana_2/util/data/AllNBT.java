@@ -44,6 +44,7 @@ public class AllNBT {
     public static final IGS<NBTBase> iManaHandleNBT = new IGS.NBTNBT("iManaHandleNBT");
     public static final IGS<NBTBase> iControlNBT = new IGS.NBTNBT("iControlNBT");
     public static final IGS<NBTBase> iHandleNBT = new IGS.NBTNBT("iHandleNBT");
+    public static final IGS<NBTBase> iClockTime = new IGS.NBTNBT("iClockTime");
 
     public static final IGS<Map<BindType, List<BlockPos>>> controlBindBlock = new IGS.BasicsNBT<Map<BindType, List<BlockPos>>>("controlBindBlock") {
         @Override

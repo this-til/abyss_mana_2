@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Random;
 
-public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, IManaLevel {
+public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, IManaLevel, IClockTime {
 
     /***
      * 获取所有的配方
@@ -37,20 +37,10 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
 
     void addShapedHandle(ShapedHandle shaped);
 
-    int getClockTime();
-
-    void setClockTime(int clockTime);
-
-    /***
-     * 获得最大触发时间刻
-     */
-    int getMaxClockTime();
-
     /***
      * 获取最大配方并行
      */
     int getParallelHandle();
-
 
     List<ShapedDrive> getShapedDrive();
 
@@ -60,23 +50,19 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         public final TileEntity tileEntity;
         public final IControl iControl;
         public final IManaLevel iManaLevel;
+        public final IClockTime iClockTime;
 
         /***
          * 正在生产、输出的配方
          */
         public List<ShapedHandle> shapedHandles = new List<>();
 
-        /***
-         * 时钟时间
-         * 为0时触发输出输入
-         */
-        public int clockTime;
-
-        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, IControl iControl, IManaLevel iManaLevel) {
+        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, IControl iControl, IManaLevel iManaLevel, IClockTime iClockTime) {
             this.shapedTypes = shapedTypes;
             this.tileEntity = tileEntity;
             this.iControl = iControl;
             this.iManaLevel = iManaLevel;
+            this.iClockTime = iClockTime;
         }
 
         /***
@@ -94,16 +80,6 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         }
 
         @Override
-        public int getClockTime() {
-            return clockTime;
-        }
-
-        @Override
-        public void setClockTime(int clockTime) {
-            this.clockTime = clockTime;
-        }
-
-        @Override
         public List<ShapedDrive> getShapedDrive() {
             List<ShapedDrive> list = new List<>();
             getCapability(BindType.modelStore).forEach((k, v) -> list.addAll(v.get()));
@@ -115,63 +91,66 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
             Map<TileEntity, IManaHandle> manaIn = getCapability(BindType.manaIn);
             Map<TileEntity, IManaHandle> manaOut = getCapability(BindType.manaOut);
             shapedHandles.forEach(shapedHandle -> shapedHandle.up(this, manaIn, manaOut));
-            clockTime--;
-            if (clockTime <= 0) {
-                clockTime = getMaxClockTime();
-                Map<TileEntity, IItemHandler> itemIn = getCapability(BindType.itemIn);
-                Map<TileEntity, IItemHandler> itemOut = getCapability(BindType.itemOut);
-                Map<TileEntity, IFluidHandler> fluidIn = getCapability(BindType.fluidIn);
-                Map<TileEntity, IFluidHandler> fluidOut = getCapability(BindType.fluidOut);
+            this.clockRun();
+        }
 
-                shapedHandles.forEach(shapedHandle -> shapedHandle.clockTime(this, itemOut, fluidOut));
+        /***
+         * 回调
+         */
+        @Override
+        public void clockTriggerRun() {
+            Map<TileEntity, IItemHandler> itemIn = getCapability(BindType.itemIn);
+            Map<TileEntity, IItemHandler> itemOut = getCapability(BindType.itemOut);
+            Map<TileEntity, IFluidHandler> fluidIn = getCapability(BindType.fluidIn);
+            Map<TileEntity, IFluidHandler> fluidOut = getCapability(BindType.fluidOut);
 
-                List<ShapedHandle> rShapedHandle = new List<>();
-                shapedHandles.forEach(h -> {
-                    if (h.isEmpty()) {
-                        rShapedHandle.add(h);
-                    }
-                });
-                rShapedHandle.forEach(r -> shapedHandles.remove(r));
+            shapedHandles.forEach(shapedHandle -> shapedHandle.clockTime(this, itemOut, fluidOut));
 
-                if (shapedHandles.size() >= getParallelHandle()) {
-                    return;
+            List<ShapedHandle> rShapedHandle = new List<>();
+            shapedHandles.forEach(h -> {
+                if (h.isEmpty()) {
+                    rShapedHandle.add(h);
                 }
+            });
+            rShapedHandle.forEach(r -> shapedHandles.remove(r));
 
-                List<ShapedDrive> shapedDrives = getShapedDrive();
-
-                List<Shaped> shapeds = new List<>();
-                List<Shaped> rShaped = new List<>();
-                Shaped.map.forEach((k, v) -> {
-                    if (shapedTypes.contains(k)) {
-                        v.forEach((_k, _v) -> {
-                            if (shapedDrives.contains(_k)) {
-                                shapeds.addAll(_v);
-                            }
-                        });
-                    }
-                });
-
-                ShapedHandle shapedHandle;
-                do {
-                    shapedHandle = null;
-                    if (!rShaped.isEmpty()) {
-                        shapeds.removeAll(rShaped);
-                        rShaped.clear();
-                    }
-
-                    for (Shaped shaped : shapeds) {
-                        shapedHandle = shaped.get(this, getManaLevel(), itemIn, fluidIn);
-                        if (shapedHandle != null) {
-                            addShapedHandle(shapedHandle);
-                            break;
-                        } else {
-                            rShaped.add(shaped);
-                        }
-                    }
-                }
-                while (shapedHandle != null && shapedHandles.size() < getParallelHandle());
-
+            if (shapedHandles.size() >= getParallelHandle()) {
+                return;
             }
+
+            List<ShapedDrive> shapedDrives = getShapedDrive();
+
+            List<Shaped> shapeds = new List<>();
+            List<Shaped> rShaped = new List<>();
+            Shaped.map.forEach((k, v) -> {
+                if (shapedTypes.contains(k)) {
+                    v.forEach((_k, _v) -> {
+                        if (shapedDrives.contains(_k)) {
+                            shapeds.addAll(_v);
+                        }
+                    });
+                }
+            });
+
+            ShapedHandle shapedHandle;
+            do {
+                shapedHandle = null;
+                if (!rShaped.isEmpty()) {
+                    shapeds.removeAll(rShaped);
+                    rShaped.clear();
+                }
+
+                for (Shaped shaped : shapeds) {
+                    shapedHandle = shaped.get(this, getManaLevel(), itemIn, fluidIn);
+                    if (shapedHandle != null) {
+                        addShapedHandle(shapedHandle);
+                        break;
+                    } else {
+                        rShaped.add(shaped);
+                    }
+                }
+            }
+            while (shapedHandle != null && shapedHandles.size() < getParallelHandle());
         }
 
         @Override
@@ -195,11 +174,6 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
             nbtTagCompound.setTag("shapedHandles", nbtBases);
             nbtTagCompound.setInteger("clockTime", getClockTime());
             return nbtTagCompound;
-        }
-
-        @Override
-        public int getMaxClockTime() {
-            return getManaLevel().getClockTime();
         }
 
         @Override
@@ -268,6 +242,21 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
         @Override
         public int getMaxBind() {
             return iControl.getMaxBind();
+        }
+
+        @Override
+        public int getClockTime() {
+            return iClockTime.getClockTime();
+        }
+
+        @Override
+        public int getCycleTime() {
+            return iClockTime.getCycleTime();
+        }
+
+        @Override
+        public void setClockTime(int clockTime) {
+            iClockTime.setClockTime(clockTime);
         }
     }
 

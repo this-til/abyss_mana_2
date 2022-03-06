@@ -32,6 +32,9 @@ public class AllCapability {
     @CapabilityInject(IManaLevel.class)
     public static Capability<IManaLevel> I_MANA_LEVEL = null;
 
+    @CapabilityInject(IClockTime.class)
+    public static Capability<IClockTime> I_CLOCK_TIME = null;
+
     public AllCapability() {
         CapabilityManager.INSTANCE.register(IControl.class, new Capability.IStorage<IControl>() {
             @Nullable
@@ -94,6 +97,19 @@ public class AllCapability {
 
             @Override
             public void readNBT(Capability<IManaLevel> capability, IManaLevel instance, EnumFacing side, NBTBase nbt) {
+
+            }
+        }, () -> null);
+
+        CapabilityManager.INSTANCE.register(IClockTime.class, new Capability.IStorage<IClockTime>() {
+            @org.jetbrains.annotations.Nullable
+            @Override
+            public NBTBase writeNBT(Capability<IClockTime> capability, IClockTime instance, EnumFacing side) {
+                return null;
+            }
+
+            @Override
+            public void readNBT(Capability<IClockTime> capability, IClockTime instance, EnumFacing side, NBTBase nbt) {
 
             }
         }, () -> null);

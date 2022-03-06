@@ -46,6 +46,7 @@ public class Hwyla_interact {
             IManaHandle iManaHandle = tileEntity.getCapability(AllCapability.I_MANA_HANDEL, null);
             IShapedDrive iShapedDrive = tileEntity.getCapability(AllCapability.I_SHAPED_DRIVE, null);
             IManaLevel iManaLevel = tileEntity.getCapability(AllCapability.I_MANA_LEVEL, null);
+            IClockTime iClockTime = tileEntity.getCapability(AllCapability.I_CLOCK_TIME, null);
 
             if (iControl != null) {
                 NBTTagCompound nbtTagCompound = iControl.serializeNBT();
@@ -56,7 +57,6 @@ public class Hwyla_interact {
 
             if (iHandle != null) {
                 NBTTagCompound nbtTagCompound = iHandle.serializeNBT();
-                nbtTagCompound.setInteger("maxClockTime", iHandle.getMaxClockTime());
                 nbtTagCompound.setInteger("maxParallel", iHandle.getParallelHandle());
                 {
                     NBTTagList shapedDriveNBT = new NBTTagList();
@@ -87,6 +87,12 @@ public class Hwyla_interact {
 
             if (iManaLevel != null) {
                 tag.setTag("iManaLevel", new NBTTagString(Objects.requireNonNull(iManaLevel.getManaLevel().getRegistryName()).toString()));
+            }
+
+            if (iClockTime != null) {
+                NBTTagCompound nbtTagCompound = iClockTime.serializeNBT();
+                nbtTagCompound.setInteger("cycleTime", iClockTime.getCycleTime());
+                tag.setTag("iClockTime", nbtTagCompound);
             }
 
             return tag;

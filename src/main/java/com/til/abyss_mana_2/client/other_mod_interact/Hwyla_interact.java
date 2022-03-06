@@ -61,6 +61,11 @@ public class Hwyla_interact {
                 tooltip.add(Lang.getLang("mana.level") + Lang.getLang(manaLevel));
             }
 
+            if (nbtTagCompound.hasKey("iClockTime")) {
+                NBTTagCompound iClockTime = nbtTagCompound.getCompoundTag("iClockTime");
+                tooltip.add(Lang.getLang("clock.time") + MessageFormat.format("{0}/{1}", iClockTime.getInteger("time"), iClockTime.getInteger("cycleTime")));
+            }
+
             if (nbtTagCompound.hasKey("iHandle")) {
                 NBTTagCompound iHandle = nbtTagCompound.getCompoundTag("iHandle");
                 tooltip.add(Lang.getLang("handle"));
@@ -77,7 +82,6 @@ public class Hwyla_interact {
                     tooltip.add("   " + Lang.getLang("use.shaped.type") + stringList);
                 }
                 tooltip.add("   " + Lang.getLang("max.parallel") + iHandle.getInteger("maxParallel"));
-                tooltip.add("   " + Lang.getLang("clock.time") + MessageFormat.format("{0}/{1}", iHandle.getInteger("clockTime"), iHandle.getInteger("maxClockTime")));
                 int i = 1;
                 for (NBTBase shapedHandles : iHandle.getTagList("shapedHandles", 10)) {
                     if (shapedHandles instanceof NBTTagCompound) {

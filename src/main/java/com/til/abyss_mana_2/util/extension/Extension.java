@@ -3,6 +3,9 @@ package com.til.abyss_mana_2.util.extension;
 public class Extension {
 
     public interface Action {
+
+        Action empty = () -> {};
+
         void action();
     }
 

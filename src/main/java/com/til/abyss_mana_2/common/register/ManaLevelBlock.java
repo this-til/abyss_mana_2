@@ -2,14 +2,11 @@ package com.til.abyss_mana_2.common.register;
 
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.AllBlock;
-import com.til.abyss_mana_2.common.ModTab;
 import com.til.abyss_mana_2.common.capability.*;
+import com.til.abyss_mana_2.util.extension.Extension;
 import com.til.abyss_mana_2.util.extension.List;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -165,11 +162,11 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             }
         }.setOrePrefix("Repeater");
         whirlBoost = (Mechanics) new Mechanics("whirl_boost", WhirlBoostTileEntity.class).setOrePrefix("WhirlBoost");
-        grind = (Mechanics) new Mechanics("grind",RunTileEntity.GrindTileEntity.class) .setOrePrefix("Grind");
-        gatherMana = (Mechanics) new Mechanics("gather_mana",GatherManaTileEntity.class) .setOrePrefix("GatherMana");
-        extractMana = (Mechanics) new Mechanics("extract_mana", RunTileEntity.ExtractMana.class ).setOrePrefix("ExtractMana");
+        grind = (Mechanics) new Mechanics("grind", RunTileEntity.GrindTileEntity.class).setOrePrefix("Grind");
+        gatherMana = (Mechanics) new Mechanics("gather_mana", GatherManaTileEntity.class).setOrePrefix("GatherMana");
+        extractMana = (Mechanics) new Mechanics("extract_mana", RunTileEntity.ExtractMana.class).setOrePrefix("ExtractMana");
         wash = (Mechanics) new Mechanics("wash", RunTileEntity.Wash.class).setOrePrefix("Wash");
-        centrifugal = (Mechanics) new Mechanics("centrifugal", RunTileEntity.Centrifugal.class) .setOrePrefix("Centrifugal");
+        centrifugal = (Mechanics) new Mechanics("centrifugal", RunTileEntity.Centrifugal.class).setOrePrefix("Centrifugal");
         pack = (Mechanics) new Mechanics("pack", RunTileEntity.Pack.class).setOrePrefix("Pack");
         unpack = (Mechanics) new Mechanics("unpack", RunTileEntity.UnPack.Pack.class).setOrePrefix("UnPack");
     }
@@ -198,6 +195,7 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         IControl iControl;
         IHandle iHandle;
         IManaLevel iManaLevel;
+        IClockTime iClockTime;
 
         @Override
         public void update() {
@@ -210,7 +208,8 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         public Map<Capability<?>, Object> getAllCapabilities(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
             iManaLevel = new IManaLevel.GetManaLevel(event.getObject());
             iControl = new IControl.Control(event.getObject(), iManaLevel);
-            iHandle = new IHandle.Handle(event.getObject(), new List<ShapedType>().add_chainable(getShapedType()), iControl, iManaLevel);
+            iClockTime = new IClockTime.ClockTime(iManaLevel);
+            iHandle = new IHandle.Handle(event.getObject(), new List<ShapedType>().add_chainable(getShapedType()), iControl, iManaLevel, iClockTime);
             map.put(AllCapability.I_CONTROL, iControl);
             map.put(AllCapability.I_HANDEL, iHandle);
             map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
