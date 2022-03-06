@@ -8,10 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import org.jetbrains.annotations.Nullable;
 
 public class ShapedType extends RegisterBasics<ShapedType> {
 
@@ -82,65 +80,31 @@ public class ShapedType extends RegisterBasics<ShapedType> {
      */
     public static ShapedType unpack;
 
+    /***
+     * 组装晶体
+     */
+    public static ShapedType assemble;
+
     public static void init() {
         grind = new ShapedType("grind") {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
                     // 矿石研磨
-                    {
-                        Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreBlock.lordWorld, ore), 1);
-                        Map<String, Integer> fluid = new Map<>();
-                        Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreBlock.lordWorld, ore, OreType.crushed, ore)) {
-                            @Override
-                            public ManaLevel getManaLevel() {
-                                return ore.getManaLevel();
-                            }
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreBlock.lordWorld, ore, OreType.crushed, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreBlock.lordWorld, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem(),
+                            ore.consumeMana(),
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.crushed), 2)),
+                            null);
+                    Shaped.register.register(shaped);
 
-                            @Override
-                            public ShapedDrive getShapedDrive() {
-                                return ShapedDrive.map.get(1);
-                            }
-
-                            @Override
-                            public ShapedType getShapedType() {
-                                return grind;
-                            }
-
-                            @Override
-                            public Map<String, Integer> item() {
-                                return item;
-                            }
-
-                            @Override
-                            public Map<String, Integer> fluid() {
-                                return fluid;
-                            }
-
-                            @Override
-                            public int surplusTiem() {
-                                return ore.surplusTiem();
-                            }
-
-                            @Override
-                            public long consumeMana() {
-                                return ore.consumeMana();
-                            }
-
-                            @Nullable
-                            @Override
-                            public List<ItemStack> getOutItem() {
-                                return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.crushed), 2));
-                            }
-
-                            @Nullable
-                            @Override
-                            public List<FluidStack> getOutFuid() {
-                                return null;
-                            }
-                        };
-                        Shaped.register.register(shaped);
-                    }
                 }
             }
 
@@ -148,58 +112,19 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             public void _onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
                     // 锭 -> 粉
-                    {
-                        Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 1);
-                        Map<String, Integer> fluid = new Map<>();
-                        Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.ingot, ore, OreType.dust, ore)) {
-                            @Override
-                            public Map<String, Integer> item() {
-                                return item;
-                            }
+                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.ingot, ore, OreType.dust, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(2),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem(),
+                            ore.consumeMana() / 5,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dust))),
+                            null);
 
-                            @Override
-                            public Map<String, Integer> fluid() {
-                                return fluid;
-                            }
-
-                            @Override
-                            public int surplusTiem() {
-                                return ore.surplusTiem() / 5;
-                            }
-
-                            @Override
-                            public long consumeMana() {
-                                return ore.consumeMana();
-                            }
-
-                            @Override
-                            public ShapedType getShapedType() {
-                                return grind;
-                            }
-
-                            @Override
-                            public ManaLevel getManaLevel() {
-                                return ore.getManaLevel();
-                            }
-
-                            @Override
-                            public ShapedDrive getShapedDrive() {
-                                return ShapedDrive.map.get(2);
-                            }
-
-                            @Override
-                            public List<ItemStack> getOutItem() {
-                                return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dust)));
-                            }
-
-                            @Nullable
-                            @Override
-                            public List<FluidStack> getOutFuid() {
-                                return null;
-                            }
-                        };
-                        Shaped.register.register(shaped);
-                    }
+                    Shaped.register.register(shaped);
                 }
             }
 
@@ -216,114 +141,37 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     if (ore.getHasMana() > 0) {
                         for (OreType oreType : canExtractManaItemType) {
-                            Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(oreType, ore), 1);
-                            Map<String, Integer> fluid = new Map<>();
-                            Shaped shaped = new Shaped.ShapedOre.RandOutOreShaped(getOreString(oreType, ore) + "_to_mana") {
-                                @Nullable
-                                @Override
-                                public Map<ItemStack, Float> itemRandon() {
-                                    return new Map<ItemStack, Float>().put_chainable(new ItemStack(Ore.embers.item.get(OreType.dustTiny)), 0.2f);
-                                }
-
-                                @Nullable
-                                @Override
-                                public Map<FluidStack, Float> fluidRandon() {
-                                    return null;
-                                }
-
-                                @Override
-                                public Map<String, Integer> item() {
-                                    return item;
-                                }
-
-                                @Override
-                                public Map<String, Integer> fluid() {
-                                    return fluid;
-                                }
-
-                                @Override
-                                public int surplusTiem() {
-                                    return ore.surplusTiem();
-                                }
-
-                                @Override
-                                public long consumeMana() {
-                                    return 0;
-                                }
-
-                                @Override
-                                public ShapedType getShapedType() {
-                                    return extractMana;
-                                }
-
-                                @Override
-                                public ManaLevel getManaLevel() {
-                                    return ore.getManaLevel();
-                                }
-
-                                @Override
-                                public ShapedDrive getShapedDrive() {
-                                    return ShapedDrive.map.get(1);
-                                }
-                            };
+                            Shaped shaped = new Shaped.ShapedOre.RandOutOreShaped(
+                                    getOreString(oreType, ore) + "_to_mana",
+                                    ore.getManaLevel(),
+                                    this,
+                                    ShapedDrive.map.get(1),
+                                    new Map<String, Integer>().put_chainable(getOreString(oreType, ore), 1),
+                                    new Map<>(),
+                                    ore.surplusTiem(),
+                                    0,
+                                    ore.getHasMana(),
+                                    new Map<ItemStack, Float>().put_chainable(new ItemStack(Ore.embers.item.get(OreType.dustTiny)), 0.2f),
+                                    null
+                            );
                             Shaped.register.register(shaped);
                         }
                         for (OreType oreType : _canExtractManaItemType) {
                             Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(oreType, ore), 1);
                             Map<String, Integer> fluid = new Map<>();
-                            Shaped shaped = new Shaped.ShapedOre.RandOutOreShaped(getOreString(oreType, ore) + "_to_mana") {
-                                @Override
-                                public Map<String, Integer> item() {
-                                    return item;
-                                }
-
-                                @Override
-                                public Map<String, Integer> fluid() {
-                                    return fluid;
-                                }
-
-                                @Override
-                                public int surplusTiem() {
-                                    return ore.surplusTiem();
-                                }
-
-                                @Override
-                                public long consumeMana() {
-                                    return 0;
-                                }
-
-                                @Override
-                                public long getOutMana() {
-                                    return ore.getHasMana() * 4L;
-                                }
-
-                                @Nullable
-                                @Override
-                                public Map<ItemStack, Float> itemRandon() {
-                                    return new Map<ItemStack, Float>().put_chainable(new ItemStack(Ore.embers.item.get(OreType.dustTiny)), 0.5f);
-                                }
-
-                                @Nullable
-                                @Override
-                                public Map<FluidStack, Float> fluidRandon() {
-                                    return null;
-                                }
-
-                                @Override
-                                public ShapedType getShapedType() {
-                                    return extractMana;
-                                }
-
-                                @Override
-                                public ManaLevel getManaLevel() {
-                                    return ore.getManaLevel();
-                                }
-
-                                @Override
-                                public ShapedDrive getShapedDrive() {
-                                    return ShapedDrive.map.get(2);
-                                }
-                            };
+                            Shaped shaped = new Shaped.ShapedOre.RandOutOreShaped(
+                                    getOreString(oreType, ore) + "_to_mana",
+                                    ore.getManaLevel(),
+                                    this,
+                                    ShapedDrive.map.get(1),
+                                    new Map<String, Integer>().put_chainable(getOreString(oreType, ore), 1),
+                                    new Map<>(),
+                                    ore.surplusTiem(),
+                                    0,
+                                    ore.getHasMana() * 4,
+                                    new Map<ItemStack, Float>().put_chainable(new ItemStack(Ore.embers.item.get(OreType.dustTiny)), 0.5f),
+                                    null
+                            );
                             Shaped.register.register(shaped);
                         }
                     }
@@ -341,61 +189,25 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
-                    Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.crushed, ore), 1);
-                    Map<String, Integer> fluid = new Map<String, Integer>().put_chainable(FluidRegistry.WATER.getName(), 1000);
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.crushed, ore, OreType.crushedPurified, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() * 2;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() * 2;
-                        }
-
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            List<ItemStack> itemStackList = new List<>();
-                            itemStackList.add(new ItemStack(ore.item.get(OreType.crushedPurified)));
-                            itemStackList.add(new ItemStack(Ore.impurity.item.get(OreType.dustTiny)));
-                            for (Ore additionalOutputOfWash : ore.getAdditionalOutputOfWash()) {
-                                itemStackList.add(new ItemStack(additionalOutputOfWash.item.get(OreType.dustTiny)));
-                            }
-                            return itemStackList;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return wash;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ore.getManaLevel();
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(1);
-                        }
-                    };
+                    List<ItemStack> outItem = new List<>();
+                    outItem.add(new ItemStack(ore.item.get(OreType.crushedPurified)));
+                    outItem.add(new ItemStack(Ore.impurity.item.get(OreType.dustTiny)));
+                    for (Ore additionalOutputOfWash : ore.getAdditionalOutputOfWash()) {
+                        outItem.add(new ItemStack(additionalOutputOfWash.item.get(OreType.dustTiny)));
+                    }
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.crushed, ore, OreType.crushedPurified, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.crushed, ore), 1),
+                            new Map<String, Integer>().put_chainable(FluidRegistry.WATER.getName(), 1000),
+                            ore.surplusTiem() * 4,
+                            ore.consumeMana(),
+                            0,
+                            outItem,
+                            null
+                    );
                     Shaped.register.register(shaped);
                 }
             }
@@ -410,62 +222,28 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
+                    List<ItemStack> outItems = new List<>();
+                    outItems.add(new ItemStack(ore.item.get(OreType.dust)));
+                    outItems.add(new ItemStack(Ore.impurity.item.get(OreType.dustTiny)));
+                    for (Ore additionalOutputOfWash : ore.getAdditionalOutputOfCentrifugal()) {
+                        outItems.add(new ItemStack(additionalOutputOfWash.item.get(OreType.dustTiny)));
+                    }
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.crushedPurified, ore), 1);
                     Map<String, Integer> fluid = new Map<>();
 
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.crushedPurified, ore, OreType.dust, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() * 3;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() * 3;
-                        }
-
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            List<ItemStack> itemStackList = new List<>();
-                            itemStackList.add(new ItemStack(ore.item.get(OreType.dust)));
-                            itemStackList.add(new ItemStack(Ore.impurity.item.get(OreType.dustTiny)));
-                            for (Ore additionalOutputOfWash : ore.getAdditionalOutputOfCentrifugal()) {
-                                itemStackList.add(new ItemStack(additionalOutputOfWash.item.get(OreType.dustTiny)));
-                            }
-                            return itemStackList;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return centrifugal;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ore.getManaLevel();
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(1);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.crushedPurified, ore, OreType.dust, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.crushedPurified, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() * 8,
+                            ore.consumeMana(),
+                            0,
+                            outItems,
+                            null
+                    );
                     Shaped.register.register(shaped);
                 }
             }
@@ -483,53 +261,17 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 9);
                     Map<String, Integer> fluid = new Map<>();
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.ingot, ore, OreBlock.block, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.itemBlock.get(OreBlock.block)));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return pack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(1);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.ingot, ore, OreBlock.block, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 9),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.itemBlock.get(OreBlock.block))),
+                            null);
                     Shaped.register.register(shaped);
                 }
             }
@@ -540,53 +282,18 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.nuggets, ore), 9);
                     Map<String, Integer> fluid = new Map<>();
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.nuggets, ore, OreType.ingot, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.ingot)));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return pack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(2);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.nuggets, ore, OreType.ingot, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(2),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.nuggets, ore), 9),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.ingot))),
+                            null);
                     Shaped.register.register(shaped);
                 }
             }
@@ -597,54 +304,19 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.dustTiny, ore), 9);
                     Map<String, Integer> fluid = new Map<>();
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.dustTiny, ore, OreType.dust, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dust)));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return pack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(3);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.dustTiny, ore, OreType.dust, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(3),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.dustTiny, ore), 9),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dust))),
+                            null
+                    );
                     Shaped.register.register(shaped);
 
                 }
@@ -663,54 +335,18 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreBlock.block, ore), 1);
                     Map<String, Integer> fluid = new Map<>();
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreBlock.block, ore, OreType.ingot, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.ingot), 9));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return unpack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(1);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreBlock.block, ore, OreType.ingot, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreBlock.block, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.ingot), 9)),
+                            null);
                     Shaped.register.register(shaped);
                 }
             }
@@ -721,54 +357,19 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 for (Ore ore : Ore.register) {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 1);
                     Map<String, Integer> fluid = new Map<>();
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.ingot, ore, OreType.nuggets, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.nuggets), 9));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return unpack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(2);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.ingot, ore, OreType.nuggets, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(2),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.nuggets), 9)),
+                            null
+                    );
                     Shaped.register.register(shaped);
                 }
             }
@@ -780,54 +381,18 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                     Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.dust, ore), 1);
                     Map<String, Integer> fluid = new Map<>();
 
-                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.dust, ore, OreType.dustTiny, ore)) {
-                        @Override
-                        public Map<String, Integer> item() {
-                            return item;
-                        }
-
-                        @Override
-                        public Map<String, Integer> fluid() {
-                            return fluid;
-                        }
-
-                        @Override
-                        public int surplusTiem() {
-                            return ore.surplusTiem() / 10;
-                        }
-
-                        @Override
-                        public long consumeMana() {
-                            return ore.consumeMana() / 10;
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<ItemStack> getOutItem() {
-                            return new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dustTiny), 9));
-                        }
-
-                        @Nullable
-                        @Override
-                        public List<FluidStack> getOutFuid() {
-                            return null;
-                        }
-
-                        @Override
-                        public ShapedType getShapedType() {
-                            return unpack;
-                        }
-
-                        @Override
-                        public ManaLevel getManaLevel() {
-                            return ManaLevel.T1;
-                        }
-
-                        @Override
-                        public ShapedDrive getShapedDrive() {
-                            return ShapedDrive.map.get(3);
-                        }
-                    };
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.dust, ore, OreType.dustTiny, ore),
+                            ManaLevel.T1,
+                            this,
+                            ShapedDrive.map.get(3),
+                            new Map<String, Integer>().put_chainable(getOreString(OreBlock.block, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() / 10,
+                            ore.consumeMana() / 10,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dustTiny), 9)),
+                            null);
                     Shaped.register.register(shaped);
                 }
             }
@@ -836,6 +401,38 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             public ManaLevelBlock getJEIBlock() {
                 return ManaLevelBlock.unpack;
             }
+        };
+        assemble = new ShapedType("assemble") {
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.assemble;
+            }
+
+            /***
+             * 添加支架的制作
+             */
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 4).put_chainable("blockGlassColorless", 1);
+                    Map<String, Integer> fluid = new Map<>();
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAListToBString(new List<String>().add_chainable(getOreString(OreType.ingot, ore)).add_chainable("blockGlassColorless"), getOreString(OreBlock.bracket, ore)),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 4).put_chainable("blockGlassColorless", 1),
+                            new Map<>(),
+                            ore.surplusTiem() * 16,
+                            ore.consumeMana() * 4,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.itemBlock.get(OreBlock.bracket))),
+                            null
+                    );
+                    Shaped.register.register(shaped);
+                }
+            }
+
         };
     }
 }

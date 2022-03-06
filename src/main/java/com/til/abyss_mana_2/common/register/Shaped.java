@@ -73,19 +73,94 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
     public abstract IHandle.ShapedHandle get(IHandle iControl, ManaLevel manaLevel, Map<TileEntity, IItemHandler> items, Map<TileEntity, IFluidHandler> fluids);
 
-    public abstract static class ShapedOre extends Shaped{
+    public static class ShapedOre extends Shaped {
 
-        public ShapedOre(String name) {
-            super(name);
-        }
+        public ManaLevel manaLevel;
 
-        public ShapedOre(ResourceLocation resourceLocation) {
+        Map<String, Integer> item;
+        Map<String, Integer> fluid;
+        ShapedType shapedType;
+        ShapedDrive shapedDrive;
+        int surplusTiem;
+        long consumeMana;
+        long outMana;
+        @Nullable
+        List<ItemStack> outItem;
+        @Nullable
+        List<FluidStack> outFuid;
+
+        public ShapedOre(ResourceLocation resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                         Map<String, Integer> item, Map<String, Integer> fluid, int surplusTiem, long consumeMana,
+                         long outMana, @Nullable List<ItemStack> outItem, @Nullable List<FluidStack> outFuid) {
             super(resourceLocation);
+            this.manaLevel = manaLevel;
+            this.shapedDrive = shapedDrive;
+            this.shapedType = shapedType;
+            this.fluid = fluid;
+            this.item = item;
+            this.surplusTiem = surplusTiem;
+            this.consumeMana = consumeMana;
+            this.outMana = outMana;
+            this.outItem = outItem;
+            this.outFuid = outFuid;
         }
 
-        public abstract Map<String, Integer> item();
+        public ShapedOre(String resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                         Map<String, Integer> item, Map<String, Integer> fluid, int surplusTiem, long consumeMana,
+                         long outMana, @Nullable List<ItemStack> outItem, @Nullable List<FluidStack> outFuid) {
+            this(new ResourceLocation(AbyssMana2.MODID, resourceLocation), manaLevel, shapedType, shapedDrive, item,
+                    fluid, surplusTiem, consumeMana, outMana, outItem, outFuid);
+        }
 
-        public abstract Map<String, Integer> fluid();
+        public Map<String, Integer> item() {
+            return item;
+        }
+
+        public Map<String, Integer> fluid() {
+            return fluid;
+        }
+
+        @Override
+        public int surplusTiem() {
+            return surplusTiem;
+        }
+
+        @Override
+        public long consumeMana() {
+            return consumeMana;
+        }
+
+        @Override
+        public ShapedType getShapedType() {
+            return shapedType;
+        }
+
+        @Override
+        public ManaLevel getManaLevel() {
+            return manaLevel;
+        }
+
+        @Override
+        public ShapedDrive getShapedDrive() {
+            return shapedDrive;
+        }
+
+        @Nullable
+        @Override
+        public List<ItemStack> getOutItem() {
+            return outItem != null ? outItem.copy() : new List<>();
+        }
+
+        @Nullable
+        @Override
+        public List<FluidStack> getOutFuid() {
+            return outFuid != null ? outFuid.copy() : new List<>();
+        }
+
+        @Override
+        public long getOutMana() {
+            return outMana;
+        }
 
         @Override
         public IHandle.ShapedHandle get(IHandle iControl, ManaLevel manaLevel, Map<TileEntity, IItemHandler> iItemHandlers, Map<TileEntity, IFluidHandler> fluidHandlers) {
@@ -243,23 +318,30 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
             };
         }
 
-        public abstract static class RandOutOreShaped extends ShapedOre{
+        public static class RandOutOreShaped extends ShapedOre {
 
-            public RandOutOreShaped(String name) {
-                super(name);
+            @Nullable Map<ItemStack, Float> outItemRandon;
+            @Nullable Map<FluidStack, Float> outFluidRandon;
+
+            public RandOutOreShaped(ResourceLocation resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive, Map<String, Integer> item, Map<String, Integer> fluid, int surplusTiem, long consumeMana, long outMana,@Nullable Map<ItemStack, Float> outItemRandon,@Nullable Map<FluidStack, Float> outFluidRandon) {
+                super(resourceLocation, manaLevel, shapedType, shapedDrive, item, fluid, surplusTiem, consumeMana, outMana, null, null);
             }
 
-            public RandOutOreShaped(ResourceLocation resourceLocation) {
-                super(resourceLocation);
+            public RandOutOreShaped(String resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive, Map<String, Integer> item, Map<String, Integer> fluid, int surplusTiem, long consumeMana, long outMana,@Nullable Map<ItemStack, Float> outItemRandon, @Nullable Map<FluidStack, Float> outFluidRandon) {
+                this(new ResourceLocation(AbyssMana2.MODID, resourceLocation), manaLevel, shapedType, shapedDrive, item, fluid, surplusTiem, consumeMana, outMana, outItemRandon, outFluidRandon);
             }
 
             Random random = new Random();
 
             @Nullable
-            public abstract Map<ItemStack, Float> itemRandon();
+            public Map<ItemStack, Float> itemRandon() {
+                return outItemRandon;
+            }
 
             @Nullable
-            public abstract Map<FluidStack, Float> fluidRandon();
+            public Map<FluidStack, Float> fluidRandon() {
+                return outFluidRandon;
+            }
 
             @Nullable
             @Override

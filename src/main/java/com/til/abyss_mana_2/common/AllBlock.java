@@ -62,16 +62,38 @@ public class AllBlock {
 
     }
 
+    public static class TranslucentBlock extends ModBlock {
+        public TranslucentBlock(String name) {
+            super(Material.GLASS, MapColor.GRASS, SoundType.GLASS, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "pickaxe", 2, 2.25f, 12);
+            translucent = true;
+            setLightLevel(1);
+            setLightOpacity(0);
+        }
+
+        @Override
+        public boolean isOpaqueCube(IBlockState state) {
+            return false;
+        }
+
+
+        @SideOnly(Side.CLIENT)
+        @Override
+        public BlockRenderLayer getBlockLayer() {
+            return BlockRenderLayer.TRANSLUCENT;
+        }
+    }
+
     public abstract static class MechanicsBlock extends ModBlock implements ITileEntityProvider {
 
         public MechanicsBlock(Material material, MapColor blockMapColorIn, SoundType soundType, CreativeTabs creativeTab, ResourceLocation name, String toolClass, int level, float hardness, float resistance) {
             super(material, blockMapColorIn, soundType, creativeTab, name, toolClass, level, hardness, resistance);
             translucent = true;
+            setLightLevel(1);
+            setLightOpacity(0);
         }
 
         public MechanicsBlock(String name) {
-            super(Material.GLASS, MapColor.GRASS, SoundType.GLASS, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "pickaxe", 2, 2.25f, 12);
-            translucent = true;
+            this(Material.GLASS, MapColor.GRASS, SoundType.GLASS, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "pickaxe", 2, 2.25f, 12);
         }
 
         @Override
@@ -99,8 +121,6 @@ public class AllBlock {
                 super(name);
                 this.tileEntityClass = tileEntityClass;
                 GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(AbyssMana2.MODID, tileEntityClass.getName()));
-                setLightLevel(1);
-                setLightOpacity(0);
             }
 
             @Nullable

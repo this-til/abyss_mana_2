@@ -16,6 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Detainted;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,7 +61,6 @@ public class OreType extends RegisterBasics<OreType> {
         OreType oreType = this;
         String name = Objects.requireNonNull(getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(ore.getRegistryName()).getResourcePath();
         return new Item(){
-
             @Override
             public String getItemStackDisplayName(ItemStack stack) {
                 return Lang.getLang(ore, oreType);
@@ -136,6 +136,7 @@ public class OreType extends RegisterBasics<OreType> {
     /***
      * 透镜
      */
+    @Detainted
     public static OreType lens;
 
     public static void init() {
@@ -195,6 +196,6 @@ public class OreType extends RegisterBasics<OreType> {
         }.setOreType("dustTiny");
         sublimation = new OreType("sublimation").setOreType("sublimation");
         crystal = new OreType("crystal").setOreType("crystal");
-        lens = new OreType("lens").setOreType("lens");
+        // lens = new OreType("lens").setOreType("lens");
     }
 }

@@ -78,4 +78,8 @@ public class List<E> extends ArrayList<E> {
 
     }
 
+    public List<E> copy() {
+        return new List<>(this);
+    }
+
 }

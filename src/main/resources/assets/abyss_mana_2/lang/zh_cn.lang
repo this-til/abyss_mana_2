@@ -21,7 +21,6 @@ abyss_mana_2.infiltration_dust.name=浸魔粉
 abyss_mana_2.dust_tiny.name=小搓粉
 abyss_mana_2.sublimation.name=升华态
 abyss_mana_2.crystal.name=晶体态
-abyss_mana_2.lens.name=透镜
 
 #OreBlock
 abyss_mana_2.ore.name=矿
@@ -49,10 +48,15 @@ abyss_mana_2.wash.name=洗涤晶体
 abyss_mana_2.centrifugal.name=离心晶体
 abyss_mana_2.pack.name=打包晶体
 abyss_mana_2.unpack.name=解包晶体
+abyss_mana_2.assemble.name=组装晶体
 
 #ManaLevelBlock
 abyss_mana_2.repeater.name=能力中继器晶体
 abyss_mana_2.whirl_boost.name=回旋升压晶体
+
+#ManaLevelItem
+abyss_mana_2.control_crystal.name=控制晶体
+abyss_mana_2.lens.name=透镜
 
 #BindType
 abyss_mana_2.item_in.name=物品输入

@@ -3,7 +3,6 @@ package com.til.abyss_mana_2.common.register;
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.AllBlock;
 import com.til.abyss_mana_2.common.capability.*;
-import com.til.abyss_mana_2.util.extension.Extension;
 import com.til.abyss_mana_2.util.extension.List;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.block.Block;
@@ -25,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
+public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
     public static IForgeRegistry<ManaLevelBlock> register = null;
 
@@ -37,7 +36,9 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         super(resourceLocation);
     }
 
-    public abstract Block getBlock(ManaLevel manaLevel);
+    public Block getBlock(ManaLevel manaLevel) {
+        return new AllBlock.TranslucentBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath());
+    }
 
     public int getLayer() {
         return 0;
@@ -78,6 +79,13 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
     public static ManaLevelBlock repeater;
 
     /***
+     * 基础框架
+     */
+    public static ManaLevelBlock frameBasic;
+
+    //_______________
+
+    /***
      * 回旋升压
      */
     public static Mechanics whirlBoost;
@@ -116,6 +124,11 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
      * 解包
      */
     public static ManaLevelBlock unpack;
+
+    /***
+     * 组装机
+     */
+    public static ManaLevelBlock assemble;
 
     public static void init() {
         repeater = (ManaLevelBlock) new ManaLevelBlock("repeater") {
@@ -161,6 +174,7 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
                 }.setLightLevel(1).setLightOpacity(0);
             }
         }.setOrePrefix("Repeater");
+        frameBasic = (ManaLevelBlock) new ManaLevelBlock("frame_basic").setOrePrefix("FrameBasic");
         whirlBoost = (Mechanics) new Mechanics("whirl_boost", WhirlBoostTileEntity.class).setOrePrefix("WhirlBoost");
         grind = (Mechanics) new Mechanics("grind", RunTileEntity.GrindTileEntity.class).setOrePrefix("Grind");
         gatherMana = (Mechanics) new Mechanics("gather_mana", GatherManaTileEntity.class).setOrePrefix("GatherMana");
@@ -168,7 +182,8 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         wash = (Mechanics) new Mechanics("wash", RunTileEntity.Wash.class).setOrePrefix("Wash");
         centrifugal = (Mechanics) new Mechanics("centrifugal", RunTileEntity.Centrifugal.class).setOrePrefix("Centrifugal");
         pack = (Mechanics) new Mechanics("pack", RunTileEntity.Pack.class).setOrePrefix("Pack");
-        unpack = (Mechanics) new Mechanics("unpack", RunTileEntity.UnPack.Pack.class).setOrePrefix("UnPack");
+        unpack = (Mechanics) new Mechanics("unpack", RunTileEntity.Pack.class).setOrePrefix("UnPack");
+        assemble = (Mechanics) new Mechanics("assemble", RunTileEntity.Assemble.class).setOrePrefix("Assemble");
     }
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -213,6 +228,7 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             map.put(AllCapability.I_CONTROL, iControl);
             map.put(AllCapability.I_HANDEL, iHandle);
             map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
+            map.put(AllCapability.I_CLOCK_TIME, iClockTime);
             return map;
         }
 
@@ -263,6 +279,14 @@ public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             @Override
             public ShapedType getShapedType() {
                 return ShapedType.pack;
+            }
+        }
+
+        public static class Assemble extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.assemble;
             }
         }
 

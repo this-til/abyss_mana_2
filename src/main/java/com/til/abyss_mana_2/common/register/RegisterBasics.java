@@ -1,6 +1,8 @@
 package com.til.abyss_mana_2.common.register;
 
 import com.til.abyss_mana_2.AbyssMana2;
+import com.til.abyss_mana_2.util.extension.List;
+import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,7 +56,33 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
         return new ResourceLocation(AbyssMana2.MODID, "shaped_ore_recipe_" + getOreString(at, a) + "_to_" + getOreString(bt, b));
     }
 
-    public static class NoValue extends RuntimeException{
+    public static ResourceLocation getRecipeNameOfAListToBString(Map<RegisterBasics<?>, RegisterBasics<?>> map, String out) {
+        StringBuilder p = new StringBuilder();
+        int i = 0;
+        for (java.util.Map.Entry<RegisterBasics<?>, RegisterBasics<?>> registerBasicsRegisterBasicsEntry : map.entrySet()) {
+            p.append(getOreString(registerBasicsRegisterBasicsEntry.getKey(), registerBasicsRegisterBasicsEntry.getValue()));
+            if (i < map.size() - 1) {
+                p.append("_and_");
+            }
+            i++;
+        }
+        return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
+    }
+
+    public static ResourceLocation getRecipeNameOfAListToBString(List<String> strings, String out) {
+        StringBuilder p = new StringBuilder();
+        int i = 0;
+        for (String s : strings) {
+            p.append(strings);
+            if (i < strings.size() - 1) {
+                p.append("_and_");
+            }
+            i++;
+        }
+        return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
+    }
+
+    public static class NoValue extends RuntimeException {
         /**
          * Constructs a new runtime exception with {@code null} as its
          * detail message.  The cause is not initialized, and may subsequently be

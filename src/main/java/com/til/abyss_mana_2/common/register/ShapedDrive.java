@@ -48,7 +48,7 @@ public class ShapedDrive extends RegisterBasics<ShapedDrive> {
     @SubscribeEvent
     public void register(RegistryEvent.Register<ShapedDrive> event) {
         event.getRegistry().register(this);
-        block = new ShapedDriveBlock(this).setLightLevel(1).setLightOpacity(0);
+        block = new ShapedDriveBlock(this);
         itemBlock = (ItemBlock) new ItemBlock(block)
                 .setRegistryName(Objects.requireNonNull(block.getRegistryName()))
                 .setUnlocalizedName(AbyssMana2.MODID + "." + block.getRegistryName().getResourcePath());

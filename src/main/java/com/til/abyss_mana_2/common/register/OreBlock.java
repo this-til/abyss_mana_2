@@ -58,6 +58,11 @@ public class OreBlock extends RegisterBasics<OreBlock> {
 
     public static OreBlock block;
 
+    /***
+     * 支架
+     */
+    public static OreBlock bracket;
+
     public static void init() {
         lordWorld = new OreMineral("lord_world");
         lordWorldSand = new OreMineral("lord_world_sand") {
@@ -90,16 +95,17 @@ public class OreBlock extends RegisterBasics<OreBlock> {
             public int getLayer() {
                 return 0;
             }
-
-            @SubscribeEvent
-            public void onEvent(ModEvent.ModEventLoad.init event) {
-                for (Ore ore : Ore.register) {
-                    // 锭 -> 块
-                    registerOreRecipe(getRecipeNameOfAToB(OreType.ingot, ore, this, ore), new ItemStack(ore.itemBlock.get(this)),
-                            "AAA", "AAA", "AAA", 'A', getOreString(OreType.ingot, ore));
-                }
+        };
+        bracket = new OreBlock("bracket"){
+            @Override
+            public int getLayer() {
+                return 0;
             }
 
+            @Override
+            public Block getBlock(Ore ore) {
+                return new AllBlock.TranslucentBlock(Objects.requireNonNull(getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(ore.getRegistryName()).getResourcePath());
+            }
         };
     }
 

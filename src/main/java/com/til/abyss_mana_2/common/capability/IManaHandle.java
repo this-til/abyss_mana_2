@@ -69,7 +69,7 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
          */
         @Override
         public long getMaxMana() {
-            return 160000 * getManaLevel().getMaxManaContainer();
+            return 1260000 * getManaLevel().getMaxManaContainer();
         }
 
         /***
