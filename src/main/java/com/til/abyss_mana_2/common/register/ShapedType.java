@@ -414,14 +414,16 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
-                    Map<String, Integer> item = new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 4).put_chainable("blockGlassColorless", 1);
-                    Map<String, Integer> fluid = new Map<>();
+                    Map<String, Integer> itemMap = new Map<String, Integer>()
+                            .put_chainable(getOreString(OreType.ingot, ore), 4)
+                            .put_chainable(getOreString(OreType.string, ore), 16)
+                            .put_chainable("blockGlassColorless", 1);
                     Shaped shaped = new Shaped.ShapedOre(
-                            getRecipeNameOfAListToBString(new List<String>().add_chainable(getOreString(OreType.ingot, ore)).add_chainable("blockGlassColorless"), getOreString(OreBlock.bracket, ore)),
+                            getName(itemMap, getOreString(OreBlock.bracket, ore)),
                             ore.getManaLevel(),
                             this,
                             ShapedDrive.map.get(1),
-                            new Map<String, Integer>().put_chainable(getOreString(OreType.ingot, ore), 4).put_chainable("blockGlassColorless", 1),
+                            itemMap,
                             new Map<>(),
                             ore.surplusTiem() * 16,
                             ore.consumeMana() * 4,
@@ -432,7 +434,6 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                     Shaped.register.register(shaped);
                 }
             }
-
         };
     }
 }

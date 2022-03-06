@@ -82,6 +82,19 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
         return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
     }
 
+    public static ResourceLocation getName(Map<String, Integer> map, String out){
+        StringBuilder p = new StringBuilder();
+        int i = 0;
+        for (java.util.Map.Entry<String, Integer> stringIntegerEntry : map.entrySet()) {
+            p.append(stringIntegerEntry.getKey());
+            if (i < map.size() - 1) {
+                p.append("_and_");
+            }
+            i++;
+        }
+        return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
+    }
+
     public static class NoValue extends RuntimeException {
         /**
          * Constructs a new runtime exception with {@code null} as its

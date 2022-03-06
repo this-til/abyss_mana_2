@@ -139,6 +139,11 @@ public class OreType extends RegisterBasics<OreType> {
     @Detainted
     public static OreType lens;
 
+    /***
+     * 线
+     */
+    public static OreType string;
+
     public static void init() {
         ingot = new OreType("ingot") {
            /* @SubscribeEvent
@@ -197,5 +202,6 @@ public class OreType extends RegisterBasics<OreType> {
         sublimation = new OreType("sublimation").setOreType("sublimation");
         crystal = new OreType("crystal").setOreType("crystal");
         // lens = new OreType("lens").setOreType("lens");
+        string = new OreType("string").setOreType("string");
     }
 }
