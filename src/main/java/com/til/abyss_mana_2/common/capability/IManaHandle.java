@@ -1,10 +1,21 @@
 package com.til.abyss_mana_2.common.capability;
 
+import com.google.gson.JsonObject;
+import com.til.abyss_mana_2.common.particle.CommonParticle;
+import com.til.abyss_mana_2.common.register.BindType;
 import com.til.abyss_mana_2.common.register.ManaLevel;
+import com.til.abyss_mana_2.util.Pos;
 import com.til.abyss_mana_2.util.data.AllNBT;
+import com.til.abyss_mana_2.util.data.message.player_message.PlayerMessage;
+import com.til.abyss_mana_2.util.extension.List;
+import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
+
+import java.util.Random;
 
 public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
 
@@ -135,5 +146,116 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
             mana = AllNBT.modMana.get(nbt);
         }
 
+        public static class WhirlBoostManaHandle extends ManaHandle implements ITickable, IControl {
+
+            public Random random = new Random();
+
+            public long maxRate;
+            public final IControl iControl;
+
+            public WhirlBoostManaHandle(TileEntity tileEntity, IManaLevel iManaLevel, IControl iControl) {
+                super(tileEntity, iManaLevel);
+                this.iControl = iControl;
+            }
+
+            @Override
+            public void update() {
+                extractMana();
+            }
+
+            public void extractMana(){
+                maxRate = 0;
+                Map<TileEntity, IManaHandle> iManaHandles = getCapability(BindType.manaIn);
+                iManaHandles.forEach((k, v) -> {
+                    if (!(v instanceof WhirlBoostManaHandle))
+                        maxRate += v.getMaxRate();
+                });
+                for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : iManaHandles.entrySet()) {
+                    long rMana = getRemainMana();
+                    if (rMana > 0) {
+                        long add;
+                        mana += add = tileEntityIManaHandleEntry.getValue().extractMana(rMana);
+                        if (random.nextFloat() < add / 320f) {
+                            CommonParticle.MANA_TRANSFER.add(getThis().getWorld(), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new Pos(getThis().getPos()), new JsonObject());
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            /***
+             * 返回最大的提取速度
+             */
+            @Override
+            public long getMaxRate() {
+                return maxRate;
+            }
+
+            /***
+             * 返回最大容量
+             */
+            @Override
+            public long getMaxMana() {
+                return maxRate * getManaLevel().getMaxManaContainer();
+            }
+
+            @Override
+            public void unbundlingAll() {
+                iControl.unbundlingAll();
+            }
+
+            @Override
+            public long addMana(long mana) {
+                extractMana();
+                return super.addMana(mana);
+            }
+
+            @Override
+            public long extractMana(long demand) {
+                extractMana();
+                return super.extractMana(demand);
+            }
+
+            @Override
+            public PlayerMessage.MessageData binding(TileEntity tileEntity, BindType iBindType) {
+                return iControl.binding(tileEntity, iBindType);
+            }
+
+            @Override
+            public PlayerMessage.MessageData unBindling(TileEntity tileEntity, BindType iBindType) {
+                return iControl.unBindling(tileEntity, iBindType);
+            }
+
+            @Override
+            public boolean hasBundling(TileEntity tileEntity, BindType bindType) {
+                return iControl.hasBundling(tileEntity, bindType);
+            }
+
+            @Override
+            public List<TileEntity> getAllTileEntity(BindType iBindType) {
+                return iControl.getAllTileEntity(iBindType);
+            }
+
+            @Override
+            public <C> Map<TileEntity, C> getCapability(Capability<C> capability, BindType iBindType) {
+                return iControl.getCapability(capability, iBindType);
+            }
+
+            @Override
+            public <C> Map<TileEntity, C> getCapability(BindType.BundTypeBindCapability<C> bundTypeBindCapability) {
+                return iControl.getCapability(bundTypeBindCapability);
+            }
+
+            @Override
+            public int getMaxRange() {
+                return iControl.getMaxRange();
+            }
+
+            @Override
+            public int getMaxBind() {
+                return iControl.getMaxBind();
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.til.abyss_mana_2.common;
 
 import com.til.abyss_mana_2.AbyssMana2;
-import com.til.abyss_mana_2.common.capability.ITileEntityType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.ITileEntityProvider;
@@ -13,10 +12,11 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
 public class AllBlock {
 
@@ -35,7 +35,7 @@ public class AllBlock {
 
         @SideOnly(Side.CLIENT)
         @Override
-        public  BlockRenderLayer getBlockLayer() {
+        public BlockRenderLayer getBlockLayer() {
             return BlockRenderLayer.CUTOUT_MIPPED;
         }
 
@@ -43,7 +43,7 @@ public class AllBlock {
 
     public static class FallBlockBasic extends BlockFalling {
 
-        public FallBlockBasic(Material material,  SoundType soundType, CreativeTabs creativeTab, ResourceLocation name, String toolClass, int level, float hardness, float resistance) {
+        public FallBlockBasic(Material material, SoundType soundType, CreativeTabs creativeTab, ResourceLocation name, String toolClass, int level, float hardness, float resistance) {
             super(material);
             setRegistryName(name);
             setUnlocalizedName(name.getResourceDomain() + "." + name.getResourcePath());
@@ -56,7 +56,7 @@ public class AllBlock {
 
         @SideOnly(Side.CLIENT)
         @Override
-        public  BlockRenderLayer getBlockLayer() {
+        public BlockRenderLayer getBlockLayer() {
             return BlockRenderLayer.CUTOUT_MIPPED;
         }
 
@@ -91,6 +91,29 @@ public class AllBlock {
             return BlockRenderLayer.TRANSLUCENT;
         }
 
+        public static class ShapedTypeMaterial extends MechanicsBlock {
 
+            public Class<? extends TileEntity> tileEntityClass;
+
+            public ShapedTypeMaterial(String name, Class<? extends TileEntity> tileEntityClass) {
+                super(name);
+                this.tileEntityClass = tileEntityClass;
+                GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(AbyssMana2.MODID, tileEntityClass.getName()));
+                setLightLevel(1);
+                setLightOpacity(0);
+            }
+
+            @Nullable
+            @Override
+            public TileEntity createNewTileEntity(World worldIn, int meta) {
+                try {
+                    return tileEntityClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    AbyssMana2.logger.throwing(e);
+                    return new TileEntity() {
+                    };
+                }
+            }
+        }
     }
 }

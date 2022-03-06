@@ -501,7 +501,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Override
@@ -558,7 +558,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Override
@@ -615,7 +615,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Nullable
@@ -681,7 +681,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Nullable
@@ -739,7 +739,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Nullable
@@ -798,7 +798,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
 
                         @Override
                         public long consumeMana() {
-                            return ore.getHasMana() / 10;
+                            return ore.consumeMana() / 10;
                         }
 
                         @Nullable

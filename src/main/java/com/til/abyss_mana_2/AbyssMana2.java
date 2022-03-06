@@ -16,7 +16,7 @@ public class AbyssMana2
     public static final String NAME = "abyss_mana_2";
     public static final String VERSION = "1.0";
 
-    private static Logger logger;
+    public static Logger logger;
 
     @SidedProxy(clientSide = "com.til.abyss_mana_2.client.ClientProxy", serverSide = "com.til.abyss_mana_2.common.CommonProxy")
     public static CommonProxy proxy;

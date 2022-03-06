@@ -329,12 +329,12 @@ public class Ore extends RegisterBasics<Ore> {
             }
 
             @Override
-            public long consumeMana() {
+            public long getHasMana() {
                 return 12800;
             }
 
             @Override
-            public long getHasMana() {
+            public long consumeMana() {
                 return 256;
             }
         };

@@ -402,7 +402,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                 for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : inMana.entrySet()) {
                     long mana = tileEntityIManaHandleEntry.getValue().extractMana(needGetMana);
                     needGetMana = needGetMana - mana;
-                    if (rand.nextFloat() < mana / 128f) {
+                    if (rand.nextFloat() < mana / 320f) {
                         CommonParticle.MANA_TRANSFER.add(c.getThis().getWorld(), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new Pos(c.getThis().getPos()), new JsonObject());
                     }
                 }
@@ -421,7 +421,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                     for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : outMana.entrySet()) {
                         long mana = tileEntityIManaHandleEntry.getValue().addMana(shapedHandle.outMana);
                         shapedHandle.outMana = shapedHandle.outMana - mana;
-                        if (rand.nextFloat() < mana / 128f) {
+                        if (rand.nextFloat() < mana / 320f) {
                             CommonParticle.MANA_TRANSFER.add(c.getThis().getWorld(), new Pos(c.getThis().getPos()), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new JsonObject());
                         }
                     }

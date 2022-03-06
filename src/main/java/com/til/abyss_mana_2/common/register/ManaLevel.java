@@ -14,10 +14,11 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Objects;
 
-public class ManaLevel extends RegisterBasics<ManaLevel> {
+public abstract class ManaLevel extends RegisterBasics<ManaLevel> {
 
     public static IForgeRegistry<ManaLevel> register = null;
 
@@ -60,9 +61,21 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
         return getLevel();
     }
 
-    public long getMaxManaContainer(){
+    public long getMaxManaContainer() {
         return getLevel();
     }
+
+    /***
+     * 获得上一级
+     */
+    @Nullable
+    public abstract ManaLevel getUp();
+
+    /***
+     * 获得下一级
+     */
+    @Nullable
+    public abstract ManaLevel getNext();
 
     @SubscribeEvent
     public void register(RegistryEvent.Register<ManaLevel> event) {
@@ -147,6 +160,17 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 64 * 20;
             }
+
+            @Nullable
+            @Override
+            public ManaLevel getUp() {
+                return null;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return T2;
+            }
         };
         T2 = new ManaLevel("t2") {
             @Override
@@ -161,6 +185,17 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
 
             public int getClockTime() {
                 return 32 * 20;
+            }
+
+            @Override
+            public ManaLevel getUp() {
+                return T1;
+            }
+
+
+            @Override
+            public ManaLevel getNext() {
+                return T3;
             }
         };
         T3 = new ManaLevel("t3") {
@@ -177,6 +212,18 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 16 * 20;
             }
+
+            @Override
+            public ManaLevel getUp() {
+                return T2;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return T4;
+            }
+
+
         };
         T4 = new ManaLevel("t4") {
             @Override
@@ -191,6 +238,16 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
 
             public int getClockTime() {
                 return 8 * 20;
+            }
+
+            public ManaLevel getUp() {
+                return T3;
+            }
+
+
+            @Override
+            public ManaLevel getNext() {
+                return T5;
             }
         };
         T5 = new ManaLevel("t5") {
@@ -207,6 +264,16 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 4 * 20;
             }
+
+            public ManaLevel getUp() {
+                return T4;
+            }
+
+
+            @Override
+            public ManaLevel getNext() {
+                return T6;
+            }
         };
         T6 = new ManaLevel("t6") {
             @Override
@@ -222,6 +289,17 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 2 * 20;
             }
+
+            public ManaLevel getUp() {
+                return T5;
+            }
+
+
+            @Override
+            public ManaLevel getNext() {
+                return T7;
+            }
+
         };
         T7 = new ManaLevel("t7") {
             @Override
@@ -236,6 +314,15 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
 
             public int getClockTime() {
                 return 20;
+            }
+
+            public ManaLevel getUp() {
+                return T6;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return T8;
             }
         };
         T8 = new ManaLevel("t8") {
@@ -252,6 +339,15 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 10;
             }
+
+            public ManaLevel getUp() {
+                return T7;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return T9;
+            }
         };
         T9 = new ManaLevel("t9") {
             @Override
@@ -267,6 +363,16 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
             public int getClockTime() {
                 return 5;
             }
+
+            public ManaLevel getUp() {
+                return T8;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return T10;
+            }
+
         };
         T10 = new ManaLevel("t10") {
             @Override
@@ -281,6 +387,15 @@ public class ManaLevel extends RegisterBasics<ManaLevel> {
 
             public int getClockTime() {
                 return 1;
+            }
+
+            public ManaLevel getUp() {
+                return T9;
+            }
+
+            @Override
+            public ManaLevel getNext() {
+                return null;
             }
         };
     }

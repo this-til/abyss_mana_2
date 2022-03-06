@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
+public abstract class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
     public static IForgeRegistry<ManaLevelBlock> register = null;
 
@@ -40,24 +40,7 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         super(resourceLocation);
     }
 
-    public Block getBlock(ManaLevel manaLevel) {
-        String name = Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath();
-        return new AllBlock.ModBlock(Material.GLASS, MapColor.GRASS, SoundType.GLASS, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "pickaxe", 2, 2.25f, 12) {
-            @Override
-            public BlockRenderLayer getBlockLayer() {
-                return BlockRenderLayer.TRANSLUCENT;
-            }
-
-            @Override
-            public boolean isOpaqueCube(IBlockState state) {
-                return false;
-            }
-        }.setLightLevel(1).setLightOpacity(0);
-    }
-
-    public List<Class<? extends TileEntity>> registerTileEntity() {
-        return new List<>();
-    }
+    public abstract Block getBlock(ManaLevel manaLevel);
 
     public int getLayer() {
         return 0;
@@ -66,16 +49,28 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
     @SubscribeEvent
     public void register(RegistryEvent.Register<ManaLevelBlock> event) {
         event.getRegistry().register(this);
-        registerTileEntity().forEach(c -> GameRegistry.registerTileEntity(c, new ResourceLocation(AbyssMana2.MODID, c.getName())));
     }
 
     public static class Mechanics extends ManaLevelBlock {
-        public Mechanics(String name) {
-            super(name);
+
+        public final Class<? extends TileEntity> tileClass;
+
+        public Mechanics(String name, Class<? extends TileEntity> tileClass) {
+            this(new ResourceLocation(AbyssMana2.MODID, name), tileClass);
         }
 
-        public Mechanics(ResourceLocation resourceLocation) {
+        public Mechanics(ResourceLocation resourceLocation, Class<? extends TileEntity> tileClass) {
             super(resourceLocation);
+            this.tileClass = tileClass;
+        }
+
+        public Class<? extends TileEntity> getBlockTileEntity() {
+            return tileClass;
+        }
+
+        @Override
+        public Block getBlock(ManaLevel manaLevel) {
+            return new AllBlock.MechanicsBlock.ShapedTypeMaterial(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath(), getBlockTileEntity());
         }
     }
 
@@ -83,7 +78,7 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
      * 中继器
      * 在提取相应方块能力
      */
-    public static Mechanics repeater;
+    public static ManaLevelBlock repeater;
 
     /***
      * 回旋升压
@@ -126,9 +121,10 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
     public static ManaLevelBlock unpack;
 
     public static void init() {
-        repeater = (Mechanics) new Mechanics("repeater") {
+        repeater = (ManaLevelBlock) new ManaLevelBlock("repeater") {
             @Override
             public Block getBlock(ManaLevel manaLevel) {
+                GameRegistry.registerTileEntity(RepeaterTile.class, new ResourceLocation(AbyssMana2.MODID, RepeaterTile.class.getName()));
                 return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
                     @Override
                     public TileEntity createNewTileEntity(World worldIn, int meta) {
@@ -167,131 +163,15 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
                 }.setLightLevel(1).setLightOpacity(0);
             }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RepeaterTile.class);
-            }
         }.setOrePrefix("Repeater");
-        whirlBoost = (Mechanics) new Mechanics("whirl_boost").setOrePrefix("WhirlBoost");
-
-        grind = (Mechanics) new Mechanics("grind") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.GrindTileEntity();
-                    }
-
-                }.setLightLevel(1).setLightOpacity(0);
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.GrindTileEntity.class);
-            }
-        }.setOrePrefix("Grind");
-        gatherMana = (Mechanics) new Mechanics("gather_mana") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new GatherManaTileEntity();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(GatherManaTileEntity.class);
-            }
-        }.setOrePrefix("GatherMana");
-        extractMana = (Mechanics) new Mechanics("extract_mana") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.ExtractMana();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.ExtractMana.class);
-            }
-        }.setOrePrefix("ExtractMana");
-        wash = (Mechanics) new Mechanics("wash") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.Wash();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.Wash.class);
-            }
-        }.setOrePrefix("Wash");
-        centrifugal = (Mechanics) new Mechanics("centrifugal") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.Centrifugal();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.Centrifugal.class);
-            }
-        }.setOrePrefix("Centrifugal");
-        pack = (Mechanics) new Mechanics("pack") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.Pack();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.Pack.class);
-            }
-        }.setOrePrefix("Pack");
-        unpack = (Mechanics) new Mechanics("unpack") {
-            @Override
-            public Block getBlock(ManaLevel manaLevel) {
-                return new AllBlock.MechanicsBlock(Objects.requireNonNull(manaLevel.getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(getRegistryName()).getResourcePath()) {
-                    @Override
-                    public TileEntity createNewTileEntity(World worldIn, int meta) {
-                        return new RunTileEntity.UnPack();
-                    }
-                }.setLightLevel(1).setLightOpacity(0);
-
-            }
-
-            @Override
-            public List<Class<? extends TileEntity>> registerTileEntity() {
-                return super.registerTileEntity().add_chainable(RunTileEntity.UnPack.class);
-            }
-        }.setOrePrefix("UnPack");
+        whirlBoost = (Mechanics) new Mechanics("whirl_boost", WhirlBoostTileEntity.class).setOrePrefix("WhirlBoost");
+        grind = (Mechanics) new Mechanics("grind",RunTileEntity.GrindTileEntity.class) .setOrePrefix("Grind");
+        gatherMana = (Mechanics) new Mechanics("gather_mana",GatherManaTileEntity.class) .setOrePrefix("GatherMana");
+        extractMana = (Mechanics) new Mechanics("extract_mana", RunTileEntity.ExtractMana.class ).setOrePrefix("ExtractMana");
+        wash = (Mechanics) new Mechanics("wash", RunTileEntity.Wash.class).setOrePrefix("Wash");
+        centrifugal = (Mechanics) new Mechanics("centrifugal", RunTileEntity.Centrifugal.class) .setOrePrefix("Centrifugal");
+        pack = (Mechanics) new Mechanics("pack", RunTileEntity.Pack.class).setOrePrefix("Pack");
+        unpack = (Mechanics) new Mechanics("unpack", RunTileEntity.UnPack.Pack.class).setOrePrefix("UnPack");
     }
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -375,7 +255,7 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
             @Override
             public ShapedType getShapedType() {
-                return ShapedType.centrifugal;
+                return ShapedType.unpack;
             }
         }
 
@@ -383,7 +263,7 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
             @Override
             public ShapedType getShapedType() {
-                return ShapedType.centrifugal;
+                return ShapedType.pack;
             }
         }
 
@@ -396,6 +276,29 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             IManaHandle iManaHandle = new IManaHandle.ManaHandle(event.getObject(), iManaLevel);
             map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
             map.put(AllCapability.I_MANA_HANDEL, iManaHandle);
+            return map;
+        }
+    }
+
+    public static class WhirlBoostTileEntity extends TileEntity implements ITileEntityType, ITickable {
+
+        IManaHandle.ManaHandle.WhirlBoostManaHandle iManaHandle;
+
+        @Override
+        public void update() {
+            if (!world.isRemote) {
+                iManaHandle.update();
+            }
+        }
+
+        @Override
+        public Map<Capability<?>, Object> getAllCapabilities(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            IManaLevel iManaLevel = new IManaLevel.GetManaLevel(event.getObject());
+            IControl iControl = new IControl.Control(event.getObject(), iManaLevel);
+            iManaHandle = new IManaHandle.ManaHandle.WhirlBoostManaHandle(event.getObject(), iManaLevel, iControl);
+            map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
+            map.put(AllCapability.I_MANA_HANDEL, iManaHandle);
+            map.put(AllCapability.I_CONTROL, iControl);
             return map;
         }
     }
