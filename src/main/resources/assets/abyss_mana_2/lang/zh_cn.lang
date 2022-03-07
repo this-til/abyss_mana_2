@@ -19,9 +19,10 @@ abyss_mana_2.crushed_purified.name=纯净矿粉
 abyss_mana_2.dust.name=粉
 abyss_mana_2.infiltration_dust.name=浸魔粉
 abyss_mana_2.dust_tiny.name=小搓粉
-abyss_mana_2.sublimation.name=升华态
+abyss_mana_2.sublimation.name=升灵态
 abyss_mana_2.crystal.name=晶体态
 abyss_mana_2.string.name=线
+abyss_mana_2.paper.name=纸
 
 #OreBlock
 abyss_mana_2.ore.name=矿
@@ -51,6 +52,14 @@ abyss_mana_2.centrifugal.name=离心晶体
 abyss_mana_2.pack.name=打包晶体
 abyss_mana_2.unpack.name=解包晶体
 abyss_mana_2.assemble.name=组装晶体
+abyss_mana_2.stamping_machine.name=冲压晶体
+abyss_mana_2.tie_wire.name=扎线晶体
+abyss_mana_2.mana_coagulation.name=灵气凝结晶体
+abyss_mana_2.up_mana.name=升灵晶体
+abyss_mana_2.mana_perfusion.name=灵气灌注晶体
+abyss_mana_2.high_pressureFuse.name=高压融合晶体
+abyss_mana_2.dissolution.name=溶解晶体
+abyss_mana_2.freezing.name=凝固晶体
 
 #ManaLevelBlock
 abyss_mana_2.repeater.name=能力中继器晶体

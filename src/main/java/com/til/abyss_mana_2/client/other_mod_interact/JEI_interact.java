@@ -143,7 +143,7 @@ public class JEI_interact implements IModPlugin {
                     if (sID < outputs.size()) {
                         guiItemStacks.init(9 + sID, false, 90 + x * 18, y * 18);
                     } else {
-                        if (sID - outputFluidStacks.size() < inputFluidStacks.size()) {
+                        if (sID - outputs.size() < outputFluidStacks.size()) {
                             iGuiFluidStackGroup.init(9 + sID, false, 90 + x * 18, y * 18);
                         }
                     }
@@ -202,7 +202,7 @@ public class JEI_interact implements IModPlugin {
             }
             List<List<FluidStack>> fluidOut = ijeiShaped.getFluidOut();
             if (fluidOut != null) {
-                ingredients.setInputLists(VanillaTypes.FLUID, fluidOut);
+                ingredients.setOutputLists(VanillaTypes.FLUID, fluidOut);
             }
             List<List<ItemStack>> itemOut = ijeiShaped.getItemOut();
             if (itemOut != null) {
@@ -224,8 +224,8 @@ public class JEI_interact implements IModPlugin {
                 if (shaped.surplusTiem() > 0) {
                     tooltipStrings.add(Lang.getLang("consume.time") + shaped.surplusTiem());
                 }
-                if (shaped.getOutMana() > 0) {
-                    tooltipStrings.add(Lang.getLang("out.mana") + shaped.getOutMana());
+                if (shaped.outMana() > 0) {
+                    tooltipStrings.add(Lang.getLang("out.mana") + shaped.outMana());
                 }
             }
             return tooltipStrings;

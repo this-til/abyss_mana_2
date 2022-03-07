@@ -21,6 +21,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -61,6 +62,12 @@ public class ShapedDrive extends RegisterBasics<ShapedDrive> {
             map.put(i, new ShapedDrive(Integer.toString(i)));
         }
         GameRegistry.registerTileEntity(ShapedDriveTileEntity.class, new ResourceLocation(AbyssMana2.MODID, ShapedDriveTileEntity.class.getName()));
+    }
+
+    public static void initDictionary() {
+        for (ShapedDrive shapedDrive : register) {
+            OreDictionary.registerOre("shaped_drive", shapedDrive.itemBlock);
+        }
     }
 
     public static class ShapedDriveBlock extends AllBlock.MechanicsBlock {

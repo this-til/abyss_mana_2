@@ -118,17 +118,57 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
     /***
      * 打包
      */
-    public static ManaLevelBlock pack;
+    public static Mechanics pack;
 
     /***
      * 解包
      */
-    public static ManaLevelBlock unpack;
+    public static Mechanics unpack;
 
     /***
      * 组装机
      */
-    public static ManaLevelBlock assemble;
+    public static Mechanics assemble;
+
+    /***
+     * 冲压机
+     */
+    public static Mechanics stampingMachine;
+
+    /***
+     * 扎线机
+     */
+    public static Mechanics tieWire;
+
+    /***
+     * 灵气凝结晶体
+     */
+    public static Mechanics manaCoagulation;
+
+    /***
+     * 升灵晶体
+     */
+    public static Mechanics upMana;
+
+    /***
+     * 灵气灌注
+     */
+    public static Mechanics manaPerfusion;
+
+    /***
+     * 高压融合
+     */
+    public static Mechanics highPressureFuse;
+
+    /***
+     * 溶解
+     */
+    public static Mechanics dissolution;
+
+    /***
+     * 凝固
+     */
+    public static Mechanics freezing;
 
     public static void init() {
         repeater = (ManaLevelBlock) new ManaLevelBlock("repeater") {
@@ -184,6 +224,14 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         pack = (Mechanics) new Mechanics("pack", RunTileEntity.Pack.class).setOrePrefix("Pack");
         unpack = (Mechanics) new Mechanics("unpack", RunTileEntity.Pack.class).setOrePrefix("UnPack");
         assemble = (Mechanics) new Mechanics("assemble", RunTileEntity.Assemble.class).setOrePrefix("Assemble");
+        stampingMachine = (Mechanics) new Mechanics("stamping_machine", RunTileEntity.StampingMachine.class).setOrePrefix("StampingMachine");
+        tieWire = (Mechanics) new Mechanics("tie_wire", RunTileEntity.TieWire.class).setOrePrefix("TieWire");
+        manaCoagulation = (Mechanics) new Mechanics("mana_coagulation", RunTileEntity.ManaCoagulation.class).setOrePrefix("ManaCoagulation");
+        upMana = (Mechanics) new Mechanics("up_mana", RunTileEntity.UpMana.class).setOrePrefix("UpMana");
+        manaPerfusion = (Mechanics) new Mechanics("mana_perfusion", RunTileEntity.ManaPerfusion.class).setOrePrefix("ManaPerfusion");
+        highPressureFuse = (Mechanics) new Mechanics("high_pressureFuse", RunTileEntity.HighPressureFuse.class).setOrePrefix("HighPressureFuse");
+        dissolution = (Mechanics) new Mechanics("dissolution", RunTileEntity.Dissolution.class).setOrePrefix("Dissolution");
+        freezing = (Mechanics) new Mechanics("freezing", RunTileEntity.Freezing.class).setOrePrefix("Freezing");
     }
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -287,6 +335,67 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             @Override
             public ShapedType getShapedType() {
                 return ShapedType.assemble;
+            }
+        }
+
+        public static class StampingMachine extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.stampingMachine;
+            }
+        }
+
+        public static class TieWire extends RunTileEntity {
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.tieWire;
+            }
+        }
+
+        public static class ManaCoagulation extends RunTileEntity {
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.manaCoagulation;
+            }
+        }
+
+        public static class UpMana extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.upMana;
+            }
+        }
+
+        public static class ManaPerfusion extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.manaPerfusion;
+            }
+        }
+
+        public static class HighPressureFuse extends RunTileEntity {
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.highPressureFuse;
+            }
+        }
+
+        public static class Dissolution extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.dissolution;
+            }
+        }
+
+        public static class Freezing extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.freezing;
             }
         }
 

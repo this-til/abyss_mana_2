@@ -197,7 +197,7 @@ public class Ore extends RegisterBasics<Ore> {
         solidMana = new Ore("solid_mana", "SolidMana", new Color(16, 51, 148)) {
             @Override
             public long getHasMana() {
-                return 640000;
+                return 14745600;
             }
         };
         embers = new Ore("embers", "Embers", new Color(190, 190, 190)) {

@@ -70,6 +70,7 @@ public class CommonProxy {
         ManaLevel.initRecipe();
         Ore.initOreDictionary();
         Ore.initRecipe();
+        ShapedDrive.initDictionary();
         MinecraftForge.EVENT_BUS.post(new ModEvent.ModEventLoad.init());
     }
 

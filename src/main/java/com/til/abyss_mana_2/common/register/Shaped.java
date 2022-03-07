@@ -22,6 +22,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import javax.annotation.Detainted;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
     public abstract long consumeMana();
 
-    public long getOutMana() {
+    public long outMana() {
         return 0;
     }
 
@@ -75,8 +76,7 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
     public static class ShapedOre extends Shaped {
 
-        public ManaLevel manaLevel;
-
+        ManaLevel manaLevel;
         Map<String, Integer> item;
         Map<String, Integer> fluid;
         ShapedType shapedType;
@@ -131,6 +131,11 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
         }
 
         @Override
+        public long outMana() {
+            return outMana;
+        }
+
+        @Override
         public ShapedType getShapedType() {
             return shapedType;
         }
@@ -148,38 +153,48 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
         @Nullable
         @Override
         public List<ItemStack> getOutItem() {
-            return outItem != null ? outItem.copy() : null;
+            // return outItem != null ? outItem.copy() : null;
+            if (outItem != null) {
+                List<ItemStack> list = new List<>();
+                outItem.forEach(i -> list.add(i.copy()));
+                return list;
+            } else {
+                return null;
+            }
         }
 
         @Nullable
         @Override
         public List<FluidStack> getOutFuid() {
-            return outFuid != null ? outFuid.copy() : null;
-        }
-
-        @Override
-        public long getOutMana() {
-            return outMana;
+            if (outFuid != null) {
+                List<FluidStack> list = new List<>();
+                outFuid.forEach(i -> list.add(new FluidStack(i.getFluid(), i.amount)));
+                return list;
+            } else {
+                return null;
+            }
         }
 
         @Override
         public IHandle.ShapedHandle get(IHandle iControl, ManaLevel manaLevel, Map<TileEntity, IItemHandler> iItemHandlers, Map<TileEntity, IFluidHandler> fluidHandlers) {
-
-            if (item().isEmpty() && fluid().isEmpty()) {
-                return new IHandle.ShapedHandle.EmptyShapedHandle(surplusTiem(), consumeMana(), getOutMana());
-            }
 
             if ((iItemHandlers.isEmpty() && !item().isEmpty()) || (fluidHandlers.isEmpty() && !fluid().isEmpty())) {
                 return null;
             }
 
             if (extractFluid(iControl, fluidHandlers, true)) {
-                for (java.util.Map.Entry<TileEntity, IItemHandler> tileEntityIItemHandlerEntry : iItemHandlers.entrySet()) {
-                    if (extractItem(iControl, tileEntityIItemHandlerEntry, true)) {
-                        extractFluid(iControl, fluidHandlers, false);
-                        extractItem(iControl, tileEntityIItemHandlerEntry, false);
-                        return new IHandle.ShapedHandle(surplusTiem() / manaLevel.getLevel(), consumeMana() * (long) manaLevel.getLevel(), getOutMana(), getOutItem(), getOutFuid());
+                if (!item().isEmpty()) {
+                    for (java.util.Map.Entry<TileEntity, IItemHandler> tileEntityIItemHandlerEntry : iItemHandlers.entrySet()) {
+                        if (extractItem(iControl, tileEntityIItemHandlerEntry, true)) {
+                            extractFluid(iControl, fluidHandlers, false);
+                            extractItem(iControl, tileEntityIItemHandlerEntry, false);
+                            return new IHandle.ShapedHandle(surplusTiem() / manaLevel.getLevel(), consumeMana() * (long) manaLevel.getLevel(), outMana(), getOutItem(), getOutFuid());
+                        }
                     }
+                } else {
+                    extractFluid(iControl, fluidHandlers, false);
+                    return new IHandle.ShapedHandle(surplusTiem() / manaLevel.getLevel(), consumeMana() * (long) manaLevel.getLevel(), outMana(), getOutItem(), getOutFuid());
+
                 }
             }
             return null;
@@ -458,6 +473,259 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
                 };
             }
 
+        }
+
+    }
+
+    @Detainted
+    public static class NoInShaped extends Shaped {
+
+        ManaLevel manaLevel;
+        ShapedType shapedType;
+        ShapedDrive shapedDrive;
+        int surplusTiem;
+        long consumeMana;
+        long outMana;
+        @Nullable
+        List<ItemStack> outItem;
+        @Nullable
+        List<FluidStack> outFuid;
+
+        public NoInShaped(String name, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                          int surplusTiem, long consumeMana,
+                          long outMana, List<ItemStack> outItem, List<FluidStack> outFuid) {
+            this(new ResourceLocation(AbyssMana2.MODID, name), manaLevel, shapedType, shapedDrive, surplusTiem, consumeMana, outMana, outItem, outFuid);
+        }
+
+        public NoInShaped(ResourceLocation resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                          int surplusTiem, long consumeMana,
+                          long outMana, List<ItemStack> outItem, List<FluidStack> outFuid) {
+            super(resourceLocation);
+            this.manaLevel = manaLevel;
+            this.shapedType = shapedType;
+            this.shapedDrive = shapedDrive;
+            this.surplusTiem = surplusTiem;
+            this.consumeMana = consumeMana;
+            this.outMana = outMana;
+            this.outItem = outItem;
+            this.outFuid = outFuid;
+        }
+
+        @Override
+        public int surplusTiem() {
+            return surplusTiem;
+        }
+
+        @Override
+        public long consumeMana() {
+            return consumeMana;
+        }
+
+        @Override
+        public long outMana() {
+            return outMana;
+        }
+
+        @Override
+        public ShapedType getShapedType() {
+            return shapedType;
+        }
+
+        @Override
+        public ManaLevel getManaLevel() {
+            return manaLevel;
+        }
+
+        @Override
+        public ShapedDrive getShapedDrive() {
+            return shapedDrive;
+        }
+
+
+        @Nullable
+        @Override
+        public List<ItemStack> getOutItem() {
+            if (outItem != null) {
+                List<ItemStack> list = new List<>();
+                outItem.forEach(i -> list.add(i.copy()));
+                return list;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        @Override
+        public List<FluidStack> getOutFuid() {
+            if (outFuid != null) {
+                List<FluidStack> list = new List<>();
+                outFuid.forEach(i -> list.add(new FluidStack(i.getFluid(), i.amount, i.tag.copy())));
+                return list;
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public IHandle.ShapedHandle get(IHandle iControl, ManaLevel manaLevel, Map<TileEntity, IItemHandler> items, Map<TileEntity, IFluidHandler> fluids) {
+            return new IHandle.ShapedHandle(surplusTiem() / getManaLevel().getLevel(), consumeMana() * getManaLevel().getLevel(), outMana(), getOutItem(), getOutFuid());
+        }
+
+        @Override
+        public IJEIShaped getIJEIShaped() {
+            return new IJEIShaped() {
+                @Override
+                public java.util.List<java.util.List<ItemStack>> getItemIn() {
+                    return new List<>();
+                }
+
+                @Override
+                public java.util.List<java.util.List<FluidStack>> getFluidIn() {
+                    return new List<>();
+                }
+
+                @Override
+                public java.util.List<java.util.List<ItemStack>> getItemOut() {
+
+                    List<ItemStack> out = getOutItem();
+                    if (out == null) {
+                        return null;
+                    }
+
+                    java.util.List<java.util.List<ItemStack>> list = new List<>();
+                    for (ItemStack itemStack : out) {
+                        list.add(new List<ItemStack>().add_chainable(itemStack));
+                    }
+                    return list;
+                }
+
+                @Override
+                public java.util.List<java.util.List<FluidStack>> getFluidOut() {
+                    List<FluidStack> out = getOutFuid();
+                    if (out == null) {
+                        return null;
+                    }
+
+                    java.util.List<java.util.List<FluidStack>> list = new List<>();
+                    for (FluidStack fluidStack : out) {
+                        list.add(new List<FluidStack>().add_chainable(fluidStack));
+                    }
+                    return list;
+                }
+            };
+        }
+    }
+
+    @Detainted
+    public static class OutManaShaped extends Shaped {
+        ManaLevel manaLevel;
+        ShapedType shapedType;
+        ShapedDrive shapedDrive;
+        int surplusTiem;
+        long outMana;
+
+        public OutManaShaped(String name, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                             int surplusTiem, long outMana) {
+            this(new ResourceLocation(AbyssMana2.MODID, name), manaLevel, shapedType, shapedDrive, surplusTiem, outMana);
+        }
+
+        public OutManaShaped(ResourceLocation resourceLocation, ManaLevel manaLevel, ShapedType shapedType, ShapedDrive shapedDrive,
+                             int surplusTiem, long outMana) {
+            super(resourceLocation);
+            this.manaLevel = manaLevel;
+            this.shapedDrive = shapedDrive;
+            this.shapedType = shapedType;
+            this.surplusTiem = surplusTiem;
+            this.outMana = outMana;
+        }
+
+        @Override
+        public int surplusTiem() {
+            return surplusTiem;
+        }
+
+        @Override
+        public long consumeMana() {
+            return 0;
+        }
+
+        @Override
+        public long outMana() {
+            return outMana;
+        }
+
+        @Override
+        public ShapedType getShapedType() {
+            return shapedType;
+        }
+
+        @Override
+        public ManaLevel getManaLevel() {
+            return manaLevel;
+        }
+
+        @Override
+        public ShapedDrive getShapedDrive() {
+            return shapedDrive;
+        }
+
+        @Override
+        public List<ItemStack> getOutItem() {
+            return null;
+        }
+
+        @Override
+        public List<FluidStack> getOutFuid() {
+            return null;
+        }
+
+        @Override
+        public IHandle.ShapedHandle get(IHandle iControl, ManaLevel manaLevel, Map<TileEntity, IItemHandler> items, Map<TileEntity, IFluidHandler> fluids) {
+            return new IHandle.ShapedHandle(surplusTiem() / getManaLevel().getLevel(), consumeMana(), outMana(), getOutItem(), getOutFuid());
+        }
+
+        @Override
+        public IJEIShaped getIJEIShaped() {
+            return new IJEIShaped() {
+                @Override
+                public java.util.List<java.util.List<ItemStack>> getItemIn() {
+                    return new List<>();
+                }
+
+                @Override
+                public java.util.List<java.util.List<FluidStack>> getFluidIn() {
+                    return new List<>();
+                }
+
+                @Override
+                public java.util.List<java.util.List<ItemStack>> getItemOut() {
+
+                    List<ItemStack> out = getOutItem();
+                    if (out == null) {
+                        return null;
+                    }
+
+                    java.util.List<java.util.List<ItemStack>> list = new List<>();
+                    for (ItemStack itemStack : out) {
+                        list.add(new List<ItemStack>().add_chainable(itemStack));
+                    }
+                    return list;
+                }
+
+                @Override
+                public java.util.List<java.util.List<FluidStack>> getFluidOut() {
+                    List<FluidStack> out = getOutFuid();
+                    if (out == null) {
+                        return null;
+                    }
+
+                    java.util.List<java.util.List<FluidStack>> list = new List<>();
+                    for (FluidStack fluidStack : out) {
+                        list.add(new List<FluidStack>().add_chainable(fluidStack));
+                    }
+                    return list;
+                }
+            };
         }
 
     }
