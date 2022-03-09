@@ -3,6 +3,7 @@ package com.til.abyss_mana_2.common.other_mod_interact;
 import com.til.abyss_mana_2.common.AllBlock;
 import com.til.abyss_mana_2.common.capability.*;
 import com.til.abyss_mana_2.common.event.ModEvent;
+import com.til.abyss_mana_2.common.register.BindType;
 import com.til.abyss_mana_2.common.register.ShapedDrive;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.impl.ModuleRegistrar;
@@ -50,6 +51,11 @@ public class Hwyla_interact {
 
             if (iControl != null) {
                 NBTTagCompound nbtTagCompound = iControl.serializeNBT();
+                NBTTagList shapedDriveNBT = new NBTTagList();
+                for (BindType bindType : iControl.getCanBindType()) {
+                    shapedDriveNBT.appendTag(new NBTTagString(Objects.requireNonNull(bindType.getRegistryName()).toString()));
+                }
+                nbtTagCompound.setTag("bindTypeList", shapedDriveNBT);
                 nbtTagCompound.setInteger("maxBind", iControl.getMaxBind());
                 nbtTagCompound.setInteger("maxRange", iControl.getMaxRange());
                 tag.setTag("iControl", nbtTagCompound);

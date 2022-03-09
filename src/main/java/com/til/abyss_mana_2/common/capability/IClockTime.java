@@ -18,8 +18,8 @@ public interface IClockTime extends INBT {
      * 只有这里才会触发时钟方法
      */
     default void time() {
-        setClockTime(getCycleTime() - 1);
-        if (getCycleTime() >= 0) {
+        setClockTime(getClockTime() - 1);
+        if (getClockTime() <= 0) {
             clockRun();
         }
     }

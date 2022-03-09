@@ -95,8 +95,18 @@ public class OreBlock extends RegisterBasics<OreBlock> {
             public int getLayer() {
                 return 0;
             }
+
+            // 锭 -> 块
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    registerOreRecipe(getRecipeNameOfAToB(OreType.ingot, ore, this, ore), new ItemStack(ore.block.get(this)),
+                            "AAA", "AAA", "AAA", 'A', getOreString(this, ore));
+                }
+            }
+
         };
-        bracket = new OreBlock("bracket"){
+        bracket = new OreBlock("bracket") {
             @Override
             public int getLayer() {
                 return 0;

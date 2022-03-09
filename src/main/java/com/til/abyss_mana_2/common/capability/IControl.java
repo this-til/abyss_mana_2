@@ -51,16 +51,22 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
      */
     int getMaxBind();
 
+    /***
+     * 获得可以绑定的类型
+     */
+    List<BindType> getCanBindType();
 
     class Control implements IControl {
 
         public final TileEntity tileEntity;
         public final IManaLevel iManaLevel;
+        public List<BindType> bindTypes;
         public Map<BindType, List<BlockPos>> tile = new Map<>();
 
-        public Control(TileEntity tileEntity, IManaLevel iManaLevel) {
+        public Control(TileEntity tileEntity,List<BindType> bindTypes, IManaLevel iManaLevel) {
             this.tileEntity = tileEntity;
             this.iManaLevel = iManaLevel;
+            this.bindTypes = bindTypes;
         }
 
         /***
@@ -100,6 +106,9 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
             List<BlockPos> list = tile.get(iBindType, List::new);
             if (tileEntity.getWorld() != tileEntity.getWorld()) {
                 return new PlayerMessage.MessageData(true, "错误，方块不属于同一个世界.name");
+            }
+            if (!getCanBindType().contains(iBindType)) {
+                return new PlayerMessage.MessageData(true, "绑定失败，不支持类型为{0}的绑定", Objects.requireNonNull(iBindType.getRegistryName()).toString());
             }
             if (new Pos(tileEntity.getPos()).getDistance(new Pos(tileEntity.getPos())) > getMaxRange()) {
                 return new PlayerMessage.MessageData(true, "绑定失败，方块距离超过限制.name");
@@ -172,6 +181,14 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
         @Override
         public int getMaxBind() {
             return getManaLevel().getMaxBind();
+        }
+
+        /***
+         * 获得可以绑定的类型
+         */
+        @Override
+        public List<BindType> getCanBindType() {
+            return bindTypes;
         }
 
         @Override

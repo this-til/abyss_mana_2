@@ -67,7 +67,7 @@ public class AllBlock {
             super(Material.GLASS, MapColor.GRASS, SoundType.GLASS, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "pickaxe", 2, 2.25f, 12);
             translucent = true;
             setLightLevel(1);
-            setLightOpacity(0);
+            setLightOpacity(1);
         }
 
         @Override

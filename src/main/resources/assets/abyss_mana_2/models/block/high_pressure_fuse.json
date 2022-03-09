@@ -1,0 +1,7 @@
+{
+  "parent": "abyss_mana_2:custom/high_pressure_fuse/high_pressure_fuse",
+  "textures": {
+    "missing": "abyss_mana_2:block/white_0",
+    "particle": "abyss_mana_2:block/white"
+  }
+}

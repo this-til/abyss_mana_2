@@ -60,7 +60,6 @@ public class CommonProxy {
         BindType.init();
         ShapedDrive.init();
         ShapedType.init();
-        Shaped.init();
         MinecraftForge.EVENT_BUS.post(new ModEvent.ModEventLoad.preInit());
     }
 

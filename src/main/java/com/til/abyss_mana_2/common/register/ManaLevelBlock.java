@@ -83,12 +83,12 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
      */
     public static ManaLevelBlock frameBasic;
 
-    //_______________
-
     /***
      * 回旋升压
      */
     public static Mechanics whirlBoost;
+
+    //_______________
 
     /***
      * 研磨
@@ -170,6 +170,11 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
      */
     public static Mechanics freezing;
 
+    /***
+     * 结晶
+     */
+    public static Mechanics crystallizing;
+
     public static void init() {
         repeater = (ManaLevelBlock) new ManaLevelBlock("repeater") {
             @Override
@@ -229,9 +234,10 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         manaCoagulation = (Mechanics) new Mechanics("mana_coagulation", RunTileEntity.ManaCoagulation.class).setOrePrefix("ManaCoagulation");
         upMana = (Mechanics) new Mechanics("up_mana", RunTileEntity.UpMana.class).setOrePrefix("UpMana");
         manaPerfusion = (Mechanics) new Mechanics("mana_perfusion", RunTileEntity.ManaPerfusion.class).setOrePrefix("ManaPerfusion");
-        highPressureFuse = (Mechanics) new Mechanics("high_pressureFuse", RunTileEntity.HighPressureFuse.class).setOrePrefix("HighPressureFuse");
+        highPressureFuse = (Mechanics) new Mechanics("high_pressure_fuse", RunTileEntity.HighPressureFuse.class).setOrePrefix("HighPressureFuse");
         dissolution = (Mechanics) new Mechanics("dissolution", RunTileEntity.Dissolution.class).setOrePrefix("Dissolution");
         freezing = (Mechanics) new Mechanics("freezing", RunTileEntity.Freezing.class).setOrePrefix("Freezing");
+        crystallizing = (Mechanics) new Mechanics("crystallizing", RunTileEntity.Crystallizing.class).setOrePrefix("Crystal");
     }
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
@@ -254,6 +260,50 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
     }
 
+    @Deprecated
+    public static class TransmissionRepeaterTile extends TileEntity implements ITileEntityType {
+
+        IManaLevel iManaLevel;
+        IControl iControl;
+
+        /***
+         * y一个防止递归调用的
+         */
+        boolean preventRecursion;
+
+        @Override
+        public Map<Capability<?>, Object> getAllCapabilities(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            IManaLevel iManaLevel = new IManaLevel.GetManaLevel(event.getObject());
+            IControl iControl = new IControl.Control(event.getObject(), new List<BindType>().add_chainable(new BindType[]{
+                    BindType.relayIn
+            }), iManaLevel);
+            map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
+            map.put(AllCapability.I_CONTROL, iControl);
+            return map;
+        }
+
+        @Nullable
+        @Override
+        public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+            if (preventRecursion) {
+                return null;
+            }
+            T t = super.getCapability(capability, facing);
+            preventRecursion = true;
+            if (t == null) {
+                List<TileEntity> tileEntitys = iControl.getAllTileEntity(BindType.relayIn);
+                for (TileEntity tileEntity : tileEntitys) {
+                    T _t = tileEntity.getCapability(capability, facing);
+                    if (_t != null) {
+                        preventRecursion = false;
+                        return _t;
+                    }
+                }
+            }
+            return t;
+        }
+    }
+
     public abstract static class RunTileEntity extends TileEntity implements ITileEntityType, ITickable {
         IControl iControl;
         IHandle iHandle;
@@ -269,10 +319,10 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
 
         @Override
         public Map<Capability<?>, Object> getAllCapabilities(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
-            iManaLevel = new IManaLevel.GetManaLevel(event.getObject());
-            iControl = new IControl.Control(event.getObject(), iManaLevel);
-            iClockTime = new IClockTime.ClockTime(iManaLevel);
-            iHandle = new IHandle.Handle(event.getObject(), new List<ShapedType>().add_chainable(getShapedType()), iControl, iManaLevel, iClockTime);
+            iManaLevel = newManaLevel(event, map);
+            iControl = newControl(event, map);
+            iClockTime = newClockTime(event, map);
+            iHandle = newHandle(event, map);
             map.put(AllCapability.I_CONTROL, iControl);
             map.put(AllCapability.I_HANDEL, iHandle);
             map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
@@ -280,7 +330,35 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             return map;
         }
 
+        public IManaLevel newManaLevel(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            return new IManaLevel.GetManaLevel(event.getObject());
+        }
+
+        public IControl newControl(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            return new IControl.Control(event.getObject(), getBindType(), iManaLevel);
+        }
+
+        public IClockTime newClockTime(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            return new IClockTime.ClockTime(iManaLevel);
+        }
+
+        public IHandle newHandle(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+            return new IHandle.Handle(event.getObject(), new List<ShapedType>().add_chainable(getShapedType()), getBindType(), iControl, iManaLevel, iClockTime);
+        }
+
         public abstract ShapedType getShapedType();
+
+        public List<BindType> getBindType() {
+            return new List<BindType>().add_chainable(new BindType[]{
+                    BindType.itemIn,
+                    BindType.itemOut,
+                    BindType.manaIn,
+                    BindType.manaOut,
+                    BindType.fluidIn,
+                    BindType.fluidOut,
+                    BindType.modelStore,
+            });
+        }
 
         public static class GrindTileEntity extends RunTileEntity {
 
@@ -358,6 +436,35 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             public ShapedType getShapedType() {
                 return ShapedType.manaCoagulation;
             }
+
+            @Override
+            public IClockTime newClockTime(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+                return new IClockTime.ClockTime(iManaLevel) {
+                    @Override
+                    public int getCycleTime() {
+                        return Shaped.extractMana.surplusTiem() / iManaLevel.getManaLevel().getLevel();
+                    }
+                };
+            }
+
+            @Override
+            public IHandle newHandle(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
+                return new IHandle.Handle(event.getObject(), new List<ShapedType>().add_chainable(getShapedType()), getBindType(), iControl, iManaLevel, iClockTime) {
+                    @Override
+                    public int getParallelHandle() {
+                        return 1;
+                    }
+                };
+            }
+
+            @Override
+            public List<BindType> getBindType() {
+                return new List<BindType>().add_chainable(new BindType[]{
+                        BindType.modelStore,
+                        BindType.fluidOut,
+                        BindType.manaIn,
+                });
+            }
         }
 
         public static class UpMana extends RunTileEntity {
@@ -399,6 +506,14 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
             }
         }
 
+        public static class Crystallizing extends RunTileEntity {
+
+            @Override
+            public ShapedType getShapedType() {
+                return ShapedType.crystallizing;
+            }
+        }
+
     }
 
     public static class GatherManaTileEntity extends TileEntity implements ITileEntityType {
@@ -412,21 +527,14 @@ public class ManaLevelBlock extends RegisterBasics<ManaLevelBlock> {
         }
     }
 
-    public static class WhirlBoostTileEntity extends TileEntity implements ITileEntityType, ITickable {
+    public static class WhirlBoostTileEntity extends TileEntity implements ITileEntityType {
 
         IManaHandle.ManaHandle.WhirlBoostManaHandle iManaHandle;
 
         @Override
-        public void update() {
-            if (!world.isRemote) {
-                iManaHandle.update();
-            }
-        }
-
-        @Override
         public Map<Capability<?>, Object> getAllCapabilities(AttachCapabilitiesEvent<TileEntity> event, Map<Capability<?>, Object> map) {
             IManaLevel iManaLevel = new IManaLevel.GetManaLevel(event.getObject());
-            IControl iControl = new IControl.Control(event.getObject(), iManaLevel);
+            IControl iControl = new IControl.Control(event.getObject(), new List<BindType>().add_chainable(BindType.manaIn).add_chainable(BindType.manaOut), iManaLevel);
             iManaHandle = new IManaHandle.ManaHandle.WhirlBoostManaHandle(event.getObject(), iManaLevel, iControl);
             map.put(AllCapability.I_MANA_LEVEL, iManaLevel);
             map.put(AllCapability.I_MANA_HANDEL, iManaHandle);

@@ -146,7 +146,167 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
             mana = AllNBT.modMana.get(nbt);
         }
 
-        public static class WhirlBoostManaHandle extends ManaHandle implements ITickable, IControl {
+        public static class WhirlBoostManaHandle implements IManaHandle, IControl {
+
+            public Random random = new Random();
+
+            public final IControl iControl;
+            public final TileEntity tileEntity;
+            public final IManaLevel iManaLevel;
+
+            public WhirlBoostManaHandle(TileEntity tileEntity, IManaLevel iManaLevel, IControl iControl) {
+                this.iControl = iControl;
+                this.tileEntity = tileEntity;
+                this.iManaLevel = iManaLevel;
+            }
+
+            /***
+             * 返回当前容量
+             */
+            @Override
+            public long getMana() {
+                return 0;
+            }
+
+            /***
+             * 返回最大容量
+             */
+            @Override
+            public long getMaxMana() {
+                return 0;
+            }
+
+            /***
+             * 返回剩余空间
+             */
+            @Override
+            public long getRemainMana() {
+                return 0;
+            }
+
+            /***
+             * 添加灵气
+             * 返返回加入了多少
+             */
+            @Override
+            public long addMana(long mana) {
+                long add = 0;
+                Map<TileEntity, IManaHandle> iManaHandles = getCapability(BindType.manaOut);
+
+                return add;
+            }
+
+            /***
+             *  抽取灵气
+             *  返回提取了多少
+             */
+            @Override
+            public long extractMana(long need) {
+                long get = 0;
+                Map<TileEntity, IManaHandle> iManaHandles = getCapability(BindType.manaIn);
+                for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : iManaHandles.entrySet()) {
+                    long  vGet = tileEntityIManaHandleEntry.getValue().extractMana(need - get);
+                    if (random.nextFloat() < vGet / 320f) {
+                        CommonParticle.MANA_TRANSFER.add(getThis().getWorld(), new Pos(tileEntityIManaHandleEntry.getKey().getPos()), new Pos(getThis().getPos()), new JsonObject());
+                    }
+                    get += vGet;
+                }
+
+                return get;
+            }
+
+            /***
+             * 返回最大的提取速度
+             */
+            @Override
+            public long getMaxRate() {
+                int maxRate = 0;
+                for (java.util.Map.Entry<TileEntity, IManaHandle> tileEntityIManaHandleEntry : iControl.getCapability(BindType.manaIn).entrySet()) {
+                    maxRate += tileEntityIManaHandleEntry.getValue().getMaxRate();
+                }
+                return maxRate;
+            }
+
+            @Override
+            public ManaLevel getManaLevel() {
+                return iManaLevel.getManaLevel();
+            }
+
+            @Override
+            public AllNBT.IGS<NBTBase> getNBTBase() {
+                return null;
+            }
+
+            /***
+             * 返回自己
+             */
+            @Override
+            public TileEntity getThis() {
+                return tileEntity;
+            }
+
+            @Override
+            public NBTTagCompound serializeNBT() {
+                return new NBTTagCompound();
+            }
+
+            @Override
+            public void deserializeNBT(NBTTagCompound nbt) {
+
+            }
+
+            @Override
+            public void unbundlingAll() {
+                iControl.unbundlingAll();
+            }
+
+            @Override
+            public PlayerMessage.MessageData binding(TileEntity tileEntity, BindType iBindType) {
+                return iControl.binding(tileEntity, iBindType);
+            }
+
+            @Override
+            public PlayerMessage.MessageData unBindling(TileEntity tileEntity, BindType iBindType) {
+                return iControl.unBindling(tileEntity, iBindType);
+            }
+
+            @Override
+            public boolean hasBundling(TileEntity tileEntity, BindType bindType) {
+                return iControl.hasBundling(tileEntity, bindType);
+            }
+
+            @Override
+            public List<TileEntity> getAllTileEntity(BindType iBindType) {
+                return iControl.getAllTileEntity(iBindType);
+            }
+
+            @Override
+            public <C> Map<TileEntity, C> getCapability(Capability<C> capability, BindType iBindType) {
+                return iControl.getCapability(capability, iBindType);
+            }
+
+            @Override
+            public <C> Map<TileEntity, C> getCapability(BindType.BundTypeBindCapability<C> bundTypeBindCapability) {
+                return iControl.getCapability(bundTypeBindCapability);
+            }
+
+            @Override
+            public List<BindType> getCanBindType() {
+                return iControl.getCanBindType();
+            }
+
+            @Override
+            public int getMaxRange() {
+                return iControl.getMaxRange();
+            }
+
+            @Override
+            public int getMaxBind() {
+                return iControl.getMaxBind();
+            }
+        }
+
+        /*public static class WhirlBoostManaHandle extends ManaHandle implements ITickable, IControl {
 
             public Random random = new Random();
 
@@ -184,17 +344,17 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
                 }
             }
 
-            /***
+            *//***
              * 返回最大的提取速度
-             */
+             *//*
             @Override
             public long getMaxRate() {
                 return maxRate;
             }
 
-            /***
+            *//***
              * 返回最大容量
-             */
+             *//*
             @Override
             public long getMaxMana() {
                 return maxRate * getManaLevel().getMaxManaContainer();
@@ -247,6 +407,14 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
                 return iControl.getCapability(bundTypeBindCapability);
             }
 
+            *//***
+             * 获得可以绑定的类型
+             *//*
+            @Override
+            public List<BindType> getCanBindType() {
+                return iControl.getCanBindType();
+            }
+
             @Override
             public int getMaxRange() {
                 return iControl.getMaxRange();
@@ -256,6 +424,6 @@ public interface IManaHandle extends IThis<TileEntity>, INBT, IManaLevel {
             public int getMaxBind() {
                 return iControl.getMaxBind();
             }
-        }
+        }*/
     }
 }

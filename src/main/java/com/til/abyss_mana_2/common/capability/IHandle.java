@@ -57,7 +57,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
          */
         public List<ShapedHandle> shapedHandles = new List<>();
 
-        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, IControl iControl, IManaLevel iManaLevel, IClockTime iClockTime) {
+        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, List<BindType> bindTypes , IControl iControl, IManaLevel iManaLevel, IClockTime iClockTime) {
             this.shapedTypes = shapedTypes;
             this.tileEntity = tileEntity;
             this.iControl = iControl;
@@ -91,7 +91,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
             Map<TileEntity, IManaHandle> manaIn = getCapability(BindType.manaIn);
             Map<TileEntity, IManaHandle> manaOut = getCapability(BindType.manaOut);
             shapedHandles.forEach(shapedHandle -> shapedHandle.up(this, manaIn, manaOut));
-            this.clockRun();
+            this.time();
         }
 
         /***
@@ -204,6 +204,14 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
             iControl.unbundlingAll();
         }
 
+        /***
+         * 获得可以绑定的类型
+         */
+        @Override
+        public List<BindType> getCanBindType() {
+            return iControl.getCanBindType();
+        }
+
         @Override
         public PlayerMessage.MessageData binding(TileEntity tileEntity, BindType iBindType) {
             return iControl.binding(tileEntity, iBindType);
@@ -312,7 +320,8 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                 for (NBTBase nbtBase : nbtTagCompound.getTagList("outFuid", 10)) {
                     if (nbtBase instanceof NBTTagCompound) {
                         NBTTagCompound _n = (NBTTagCompound) nbtBase;
-                        FluidStack fluidStack = new FluidStack(FluidRegistry.getFluid(_n.getString("FluidName")), _n.getInteger("Amount"), _n.getCompoundTag("Tag"));
+                        FluidStack fluidStack = new FluidStack(FluidRegistry.getFluid(_n.getString("FluidName")), _n.getInteger("Amount"),
+                                _n.hasKey("Tag") ? _n.getCompoundTag("Tag").getSize() > 0 ? _n.getCompoundTag("Tag") : null : null);
                         if (fluidStack.getFluid() != null && fluidStack.amount > 0) {
                             outFuid.add(fluidStack);
                         }

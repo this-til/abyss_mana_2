@@ -25,6 +25,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class AllItem {
 
@@ -109,6 +110,7 @@ public class AllItem {
                         nbtTagCompound.setInteger("x", pos.getX());
                         nbtTagCompound.setInteger("y", pos.getY());
                         nbtTagCompound.setInteger("z", pos.getZ());
+                        nbtTagCompound.setString("type", Objects.requireNonNull(iControl.getCanBindType().get(0)).toString());
                         AllNBT.playerMessage.upDataToPlayerCLIENT(
                                 new PlayerMessage.MessageData(true, "已将目标方块设定为主绑定对象.name"), (EntityPlayerMP) player);
                     } else {

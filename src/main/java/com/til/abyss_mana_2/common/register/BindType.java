@@ -59,6 +59,9 @@ public class BindType extends RegisterBasics<BindType> {
     public static BundTypeBindCapability<IFluidHandler> fluidOut;
     public static BundTypeBindCapability<IShapedDrive> modelStore;
 
+    public static BindType relayIn;
+    public static BindType relayOut;
+
     public static void init() {
         itemIn = new BundTypeBindCapability<>("item_in", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         itemOut = new BundTypeBindCapability<>("item_out", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
@@ -67,6 +70,8 @@ public class BindType extends RegisterBasics<BindType> {
         fluidIn = new BundTypeBindCapability<>("fluid_in", CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
         fluidOut = new BundTypeBindCapability<>("fluid_out", CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
         modelStore = new BundTypeBindCapability<>("model_store", AllCapability.I_SHAPED_DRIVE);
+        relayIn = new BindType("relay_in");
+        relayOut = new BindType("relay_out");
     }
 
 }

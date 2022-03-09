@@ -126,6 +126,11 @@ public class ShapedType extends RegisterBasics<ShapedType> {
      */
     public static ShapedType freezing;
 
+    /***
+     * 结晶
+     */
+    public static ShapedType crystallizing;
+
     public static void init() {
         grind = new ShapedType("grind") {
 
@@ -190,6 +195,28 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             ore.consumeMana() / 5,
                             0,
                             new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.infiltrationDust))),
+                            null);
+
+                    Shaped.register.register(shaped);
+                }
+            }
+
+            /***
+             * 晶体磨粉
+             */
+            @SubscribeEvent
+            public void ___onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    Shaped shaped = new Shaped.ShapedOre(getRecipeNameOfAToB(OreType.crystal, ore, OreType.dust, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(3),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.crystal, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() * 12,
+                            ore.consumeMana(),
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.dust))),
                             null);
 
                     Shaped.register.register(shaped);
@@ -560,22 +587,21 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             }
         };
         manaCoagulation = new ShapedType("mana_coagulation") {
-
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
-                Shaped shaped = new Shaped.ShapedOre(
+                Shaped.extractMana = new Shaped.ShapedOre(
                         "mana_to_" + getOreString(OreFluid.solution, Ore.solidMana),
                         ManaLevel.T1,
                         this,
                         ShapedDrive.map.get(1),
                         new Map<>(),
                         new Map<>(),
-                        500,
+                        2000,
                         32,
                         0,
                         null,
-                        new List<FluidStack>().add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 144)));
-                Shaped.register.register(shaped);
+                        new List<FluidStack>().add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 100)));
+                Shaped.register.register(Shaped.extractMana);
             }
 
             @Override
@@ -594,7 +620,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             this,
                             ShapedDrive.map.get(1),
                             new Map<String, Integer>().put_chainable(getOreString(OreType.infiltrationDust, ore), 1),
-                            new Map<>(),
+                            new Map<String, Integer>().put_chainable(Ore.solidMana.fluid.get(OreFluid.solution).getName(), 144),
                             ore.surplusTiem() * 24,
                             ore.consumeMana(),
                             0,
@@ -767,7 +793,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             0,
                             null,
                             new List<FluidStack>()
-                                    .add_chainable(new FluidStack(ore.fluid.get(OreFluid.manaSolution), 144))
+                                    .add_chainable(new FluidStack(ore.fluid.get(OreFluid.solution), 144))
                                     .add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 144))
                     );
                     Shaped.register.register(shaped);
@@ -779,18 +805,18 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 return ManaLevelBlock.dissolution;
             }
         };
-        freezing = new ShapedType("freezing"){
+        freezing = new ShapedType("freezing") {
 
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
 
                 for (Ore ore : Ore.register) {
                     if (ore == Ore.solidMana) {
-                        return;
+                        continue;
                     }
 
                     Shaped shaped = new Shaped.ShapedOre(
-                            getRecipeNameOfAToB( OreFluid.solution, ore, OreType.ingot, ore),
+                            getRecipeNameOfAToB(OreFluid.solution, ore, OreType.ingot, ore),
                             ore.getManaLevel(),
                             this,
                             ShapedDrive.map.get(1),
@@ -809,6 +835,36 @@ public class ShapedType extends RegisterBasics<ShapedType> {
             @Override
             public ManaLevelBlock getJEIBlock() {
                 return ManaLevelBlock.freezing;
+            }
+        };
+        crystallizing = new ShapedType("crystallizing") {
+
+            /***
+             * 升灵 -> 晶体
+             */
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    Shaped shaped = new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.sublimation, ore, OreType.crystal, ore),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.sublimation, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() * 128,
+                            ore.consumeMana() / 32,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.crystal))),
+                            null);
+                    Shaped.register.register(shaped);
+                }
+            }
+
+
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.crystallizing;
             }
         };
     }

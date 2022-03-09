@@ -43,8 +43,11 @@ abyss_mana_2.star_river.name=星河
 abyss_mana_2.cat.name=猫
 abyss_mana_2.dog.name=狗
 abyss_mana_2.void_glow.name=虚空辉光
+abyss_mana_2.dhb.name=原子武士郑海滨专用T4-ZZ原子破碎不锈钢
 
 #ShapedType and ManaLevelBlock
+abyss_mana_2.repeater.name=能力中继器晶体
+abyss_mana_2.frame_basic.name=基础框架
 abyss_mana_2.grind.name=研磨晶体
 abyss_mana_2.extract_mana.name=灵气提取晶体
 abyss_mana_2.wash.name=洗涤晶体
@@ -60,15 +63,19 @@ abyss_mana_2.mana_perfusion.name=灵气灌注晶体
 abyss_mana_2.high_pressureFuse.name=高压融合晶体
 abyss_mana_2.dissolution.name=溶解晶体
 abyss_mana_2.freezing.name=凝固晶体
+abyss_mana_2.crystallizing.name=结晶晶体
 
 #ManaLevelBlock
-abyss_mana_2.repeater.name=能力中继器晶体
 abyss_mana_2.whirl_boost.name=回旋升压晶体
 abyss_mana_2.frame.basic.name=基础框架
 
 #ManaLevelItem
 abyss_mana_2.control_crystal.name=控制晶体
 abyss_mana_2.lens.name=透镜
+abyss_mana_2.cpu.name=中央处理晶体
+abyss_mana_2.rom.name=只读存储晶体
+abyss_mana_2.ram.name=随机存储晶体
+abyss_mana_2.io.name=I/O口和中断晶体
 
 #BindType
 abyss_mana_2.item_in.name=物品输入
@@ -78,6 +85,8 @@ abyss_mana_2.mana_out.name=灵气输出
 abyss_mana_2.fluid_in.name=流体输入
 abyss_mana_2.fluid_out.name=流体输出
 abyss_mana_2.model_store.name=使用配方集
+abyss_mana_2.relay_out.name=中继输出
+abyss_mana_2.relay_in.name=中继输入
 
 #Process
 abyss_mana_2.production.name=生产
@@ -103,6 +112,7 @@ abyss_mana_2.consume.mana.name=消耗灵气：
 abyss_mana_2.surplus.tiem.name=剩余时间：
 abyss_mana_2.out.mana.name=输出灵气：
 abyss_mana_2.state.name=当前状态：
+abyss_mana_2.can.bind.name=支持绑定类型：
 
 #JEI
 abyss_mana_2.use.mana.level.name=需要灵压等级：
@@ -110,4 +120,6 @@ abyss_mana_2.use.shaped.drive.name=需要配方集：
 abyss_mana_2.consume.time.name=消耗时间：
 abyss_mana_2.message.name=信息：
 abyss_mana_2.probability.name=概率：
+
+#other
 

@@ -58,8 +58,20 @@ public class ManaLevelItem extends RegisterBasics<ManaLevelItem> {
      */
     public static ManaLevelItem lens;
 
+    public static ManaLevelItem cpu;
+
+    public static ManaLevelItem ram;
+
+    public static ManaLevelItem rom;
+
+    public static ManaLevelItem io;
+
     public static void init() {
         lens = (ManaLevelItem) new ManaLevelItem("lens").setOrePrefix("Lens");
         controlCrystal = (ManaLevelItem) new ManaLevelItem("control_crystal").setOrePrefix("ControlCrystal");
+        cpu = (ManaLevelItem) new ManaLevelItem("cpu").setOrePrefix("CPU");
+        ram = (ManaLevelItem) new ManaLevelItem("ram").setOrePrefix("RAM");
+        rom = (ManaLevelItem) new ManaLevelItem("rom").setOrePrefix("ROM");
+        io = (ManaLevelItem) new ManaLevelItem("io").setOrePrefix("IO");
     }
 }

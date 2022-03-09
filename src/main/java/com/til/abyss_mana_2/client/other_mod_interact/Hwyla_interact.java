@@ -115,7 +115,15 @@ public class Hwyla_interact {
                 NBTTagCompound iControl = nbtTagCompound.getCompoundTag("iControl");
                 int maxBind = iControl.getInteger("maxBind");
                 tooltip.add(Lang.getLang("control"));
-                tooltip.add(Lang.getLang("max.range") + iControl.getInteger("maxRange"));
+                tooltip.add("   " + Lang.getLang("max.range") + iControl.getInteger("maxRange"));
+                tooltip.add("   " + Lang.getLang("can.bind"));
+                iControl.getTagList("bindTypeList", 8).forEach(
+                        nbtBase -> {
+                            if (nbtBase instanceof NBTTagString) {
+                                tooltip.add("       " + Lang.getLang((NBTTagString) nbtBase));
+                            }
+                        }
+                );
                 Map<BindType, com.til.abyss_mana_2.util.extension.List<BlockPos>> map = AllNBT.controlBindBlock.get(iControl);
                 map.forEach((k, v) -> {
                     if (v.isEmpty()) {
@@ -129,7 +137,9 @@ public class Hwyla_interact {
             if (nbtTagCompound.hasKey("iManaHandle")) {
                 NBTTagCompound iManaHandle = nbtTagCompound.getCompoundTag("iManaHandle");
                 tooltip.add(Lang.getLang("mana.handel"));
-                tooltip.add("   " + MessageFormat.format(Lang.getLang("now.mana.handel"), iManaHandle.getLong("now"), iManaHandle.getLong("max")));
+                if (iManaHandle.hasKey("now") || (iManaHandle.hasKey("max") && iManaHandle.getLong("max") > 0)) {
+                    tooltip.add("   " + MessageFormat.format(Lang.getLang("now.mana.handel"), iManaHandle.getLong("now"), iManaHandle.getLong("max")));
+                }
                 tooltip.add("   " + Lang.getLang("rate.mana.handel") + iManaHandle.getLong("rate"));
             }
 

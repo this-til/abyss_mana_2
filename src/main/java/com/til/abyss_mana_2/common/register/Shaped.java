@@ -296,7 +296,9 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
                     fluid.forEach((k, v) -> {
                         Fluid _fluid = FluidRegistry.getFluid(k);
                         if (_fluid != null) {
-                            list.add(new List<FluidStack>().add_chainable(new FluidStack(_fluid, v)));
+                            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+                            nbtTagCompound.setInteger("mb", v);
+                            list.add(new List<FluidStack>().add_chainable(new FluidStack(_fluid, 1000, nbtTagCompound)));
                         }
                     });
                     return list;
@@ -326,7 +328,9 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
                     java.util.List<java.util.List<FluidStack>> list = new List<>();
                     for (FluidStack fluidStack : out) {
-                        list.add(new List<FluidStack>().add_chainable(fluidStack));
+                        NBTTagCompound nbtTagCompound = fluidStack.tag != null ? fluidStack.tag.copy() : new NBTTagCompound();
+                        nbtTagCompound.setInteger("mb", fluidStack.amount);
+                        list.add(new List<FluidStack>().add_chainable(new FluidStack(fluidStack.getFluid(), 1000, nbtTagCompound)));
                     }
                     return list;
                 }
@@ -424,8 +428,10 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
                         java.util.List<java.util.List<FluidStack>> list = new ArrayList<>();
                         fluid.forEach((k, v) -> {
                             Fluid _fluid = FluidRegistry.getFluid(k);
+                            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+                            nbtTagCompound.setInteger("mb", v);
                             if (_fluid != null) {
-                                list.add(new List<FluidStack>().add_chainable(new FluidStack(_fluid, v)));
+                                list.add(new List<FluidStack>().add_chainable(new FluidStack(_fluid, 1000, nbtTagCompound)));
                             }
                         });
                         return list;
@@ -459,13 +465,14 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
                         }
                         java.util.List<java.util.List<FluidStack>> list = new List<>();
                         out.forEach((k, v) -> {
-                            FluidStack fluidStack = new FluidStack(k.getFluid(), k.amount, k.tag);
+                            FluidStack fluidStack = new FluidStack(k.getFluid(), 1000, k.tag != null ? k.tag.copy() : new NBTTagCompound());
                             NBTTagCompound nbtTagCompound = fluidStack.tag;
                             if (nbtTagCompound == null) {
                                 nbtTagCompound = new NBTTagCompound();
                                 fluidStack.tag = nbtTagCompound;
                             }
                             nbtTagCompound.setFloat("probability", v);
+                            nbtTagCompound.setInteger("mb", k.amount);
                             list.add(new List<FluidStack>().add_chainable(fluidStack));
                         });
                         return list;
@@ -608,7 +615,9 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
                     java.util.List<java.util.List<FluidStack>> list = new List<>();
                     for (FluidStack fluidStack : out) {
-                        list.add(new List<FluidStack>().add_chainable(fluidStack));
+                        NBTTagCompound nbtTagCompound = fluidStack.tag != null ? fluidStack.tag.copy() : new NBTTagCompound();
+                        nbtTagCompound.setInteger("mb", fluidStack.amount);
+                        list.add(new List<FluidStack>().add_chainable(new FluidStack(fluidStack.getFluid(), 1000, nbtTagCompound)));
                     }
                     return list;
                 }
@@ -757,8 +766,6 @@ public abstract class Shaped extends RegisterBasics<Shaped> {
 
     }
 
-    public static void init() {
-
-    }
+    public static Shaped extractMana;
 
 }

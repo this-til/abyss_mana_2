@@ -193,11 +193,16 @@ public class Ore extends RegisterBasics<Ore> {
      */
     public static Ore voidGlow;
 
+    /***
+     *
+     */
+    public static Ore DHB;
+
     public static void init() {
         solidMana = new Ore("solid_mana", "SolidMana", new Color(16, 51, 148)) {
             @Override
             public long getHasMana() {
-                return 14745600;
+                return 184320;
             }
         };
         embers = new Ore("embers", "Embers", new Color(190, 190, 190)) {
@@ -343,6 +348,7 @@ public class Ore extends RegisterBasics<Ore> {
         cat = new Ore("cat", "Cat", new Color(240, 240, 240));
         dog = new Ore("dog", "Gog", new Color(255, 185, 15));
         voidGlow = new Ore("void_glow", "VoidGlow", new Color(255, 255, 255));
+        DHB = new Ore("dhb", "DHB", new Color(220,230,240));
 
     }
 

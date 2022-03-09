@@ -162,8 +162,10 @@ public class JEI_interact implements IModPlugin {
                 }
             }));
             iGuiFluidStackGroup.addTooltipCallback(((slotIndex, input, fluidStack, tooltip) -> {
-                tooltip.add(fluidStack.amount + "mb");
                 if (fluidStack.tag != null) {
+                    if (fluidStack.tag.hasKey("mb")) {
+                        tooltip.add(fluidStack.tag.getInteger("mb") + "mb");
+                    }
                     if (fluidStack.tag.hasKey("probability")) {
                         DecimalFormat df = new DecimalFormat("0.00%");
                         tooltip.add(Lang.getLang("probability") + df.format(fluidStack.tag.getFloat("probability")));

@@ -1,6 +1,7 @@
 package com.til.abyss_mana_2.util.extension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class List<E> extends ArrayList<E> {
@@ -17,6 +18,13 @@ public class List<E> extends ArrayList<E> {
         super(c);
     }
 
+    public List(Iterable<? extends E> i) {
+        super();
+        for (E e : i) {
+            add(e);
+        }
+    }
+
     public <O> List<O> to(Extension.Func_1I<E, O> func_1I) {
         List<O> list = new List<O>();
         for (E e : this) {
@@ -30,6 +38,13 @@ public class List<E> extends ArrayList<E> {
 
     public List<E> add_chainable(E e) {
         add(e);
+        return this;
+    }
+
+    public List<E> add_chainable(E[] e) {
+        if (e != null) {
+            this.addAll(Arrays.asList(e));
+        }
         return this;
     }
 
