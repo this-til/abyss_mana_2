@@ -1,6 +1,7 @@
 package com.til.abyss_mana_2.common.register;
 
 import com.til.abyss_mana_2.AbyssMana2;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import com.til.abyss_mana_2.util.extension.List;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.item.ItemStack;
@@ -12,32 +13,33 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegistryEntry.Impl<T> {
 
-    protected String orePrefix = "";
+    public final GenericParadigmMap genericParadigmMap;
 
-    public RegisterBasics(String name) {
+    public RegisterBasics(String name, GenericParadigmMap genericParadigmMap) {
         setRegistryName(new ResourceLocation(AbyssMana2.MODID, name));
         MinecraftForge.EVENT_BUS.register(this);
+        this.genericParadigmMap = genericParadigmMap;
     }
 
-    public RegisterBasics(ResourceLocation resourceLocation) {
+    public RegisterBasics(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
         setRegistryName(resourceLocation);
         MinecraftForge.EVENT_BUS.register(this);
+        this.genericParadigmMap = genericParadigmMap;
     }
 
     public String getOrePrefix() {
-        if (orePrefix.isEmpty()) {
+
+        if (getGenericParadigmMap().containsKey(orePrefix)) {
+            return getGenericParadigmMap().get(orePrefix);
+        } else {
             ResourceLocation resourceLocation = getRegistryName();
             if (resourceLocation != null) {
-                orePrefix = resourceLocation.getResourcePath();
-                return orePrefix;
+                String ore = resourceLocation.getResourcePath();
+                getGenericParadigmMap().put_genericParadigm(orePrefix, ore);
+                return ore;
             }
         }
-        return orePrefix;
-    }
-
-    public RegisterBasics<T> setOrePrefix(String orePrefix) {
-        this.orePrefix = orePrefix;
-        return this;
+        return "";
     }
 
     public static String getOreString(RegisterBasics<?> r1, RegisterBasics<?> r2) {
@@ -69,6 +71,10 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
         return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
     }
 
+    public static ResourceLocation getRecipeNameOfAToB(RegisterBasics<?> at, RegisterBasics<?> a, RegisterBasics<?> bt, RegisterBasics<?> b, String s) {
+        return new ResourceLocation(AbyssMana2.MODID, "shaped_ore_recipe_" + getOreString(at, a) + "_to_" + getOreString(bt, b) +"_"+ s);
+    }
+
     public static ResourceLocation getRecipeNameOfAListToBString(List<String> strings, String out) {
         StringBuilder p = new StringBuilder();
         int i = 0;
@@ -82,7 +88,7 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
         return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
     }
 
-    public static ResourceLocation getName(Map<String, Integer> map, String out){
+    public static ResourceLocation getName(Map<String, Integer> map, String out) {
         StringBuilder p = new StringBuilder();
         int i = 0;
         for (java.util.Map.Entry<String, Integer> stringIntegerEntry : map.entrySet()) {
@@ -93,6 +99,10 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
             i++;
         }
         return new ResourceLocation("shaped_ore_recipe_" + p + "_to_" + out);
+    }
+
+    public GenericParadigmMap getGenericParadigmMap() {
+        return genericParadigmMap;
     }
 
     public static class NoValue extends RuntimeException {
@@ -170,5 +180,7 @@ public class RegisterBasics<T extends IForgeRegistryEntry<T>> extends IForgeRegi
             super(message, cause, enableSuppression, writableStackTrace);
         }
     }
+
+    public static final GenericParadigmMap.IKey<String> orePrefix = new GenericParadigmMap.IKey.KeyString();
 
 }

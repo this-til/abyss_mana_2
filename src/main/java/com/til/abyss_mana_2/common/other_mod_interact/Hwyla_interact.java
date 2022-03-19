@@ -4,10 +4,12 @@ import com.til.abyss_mana_2.common.AllBlock;
 import com.til.abyss_mana_2.common.capability.*;
 import com.til.abyss_mana_2.common.event.ModEvent;
 import com.til.abyss_mana_2.common.register.BindType;
+import com.til.abyss_mana_2.common.register.ManaLevelBlock;
 import com.til.abyss_mana_2.common.register.ShapedDrive;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.impl.ModuleRegistrar;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
@@ -15,8 +17,14 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -33,8 +41,12 @@ public class Hwyla_interact {
         moduleRegistrar.registerBodyProvider(mechanicsWailaDataProvider, AllBlock.MechanicsBlock.class);
         moduleRegistrar.registerTailProvider(mechanicsWailaDataProvider, AllBlock.MechanicsBlock.class);
 
-        moduleRegistrar.registerBodyProvider(mechanicsWailaDataProvider, TileEntity.class);
-        moduleRegistrar.registerNBTProvider(mechanicsWailaDataProvider, TileEntity.class);
+        moduleRegistrar.registerBodyProvider(mechanicsWailaDataProvider, ManaLevelBlock.EmptyTile.class);
+        moduleRegistrar.registerNBTProvider(mechanicsWailaDataProvider, ManaLevelBlock.EmptyTile.class);
+
+        VoidCaseProvider voidCaseProvider = new VoidCaseProvider();
+        moduleRegistrar.registerBodyProvider(voidCaseProvider, ManaLevelBlock.VoidCase.class);
+        moduleRegistrar.registerNBTProvider(voidCaseProvider, ManaLevelBlock.VoidCase.class);
     }
 
     public static class MechanicsWailaDataProvider implements IWailaDataProvider {
@@ -48,6 +60,8 @@ public class Hwyla_interact {
             IShapedDrive iShapedDrive = tileEntity.getCapability(AllCapability.I_SHAPED_DRIVE, null);
             IManaLevel iManaLevel = tileEntity.getCapability(AllCapability.I_MANA_LEVEL, null);
             IClockTime iClockTime = tileEntity.getCapability(AllCapability.I_CLOCK_TIME, null);
+            IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            IFluidHandler iFluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 
             if (iControl != null) {
                 NBTTagCompound nbtTagCompound = iControl.serializeNBT();
@@ -101,8 +115,42 @@ public class Hwyla_interact {
                 tag.setTag("iClockTime", nbtTagCompound);
             }
 
+            if (itemHandler != null) {
+                NBTTagList nbtTagList = new NBTTagList();
+                for (int i = 0; i < itemHandler.getSlots(); i++) {
+                    ItemStack itemStack = itemHandler.getStackInSlot(i);
+                    if (!itemStack.isEmpty()) {
+                        nbtTagList.appendTag(itemStack.serializeNBT());
+                    }
+                }
+                tag.setTag("itemHandler", nbtTagList);
+            }
+
+            if (iFluidHandler != null) {
+                NBTTagList nbtTagList = new NBTTagList();
+                for (IFluidTankProperties tankProperty : iFluidHandler.getTankProperties()) {
+                    FluidStack fluidStack = tankProperty.getContents();
+                    if (fluidStack != null) {
+                        nbtTagList.appendTag(fluidStack.writeToNBT(new NBTTagCompound()));
+                    }
+                }
+                tag.setTag("iFluidHandler", nbtTagList);
+            }
+
             return tag;
 
+        }
+    }
+
+    public static class VoidCaseProvider implements IWailaDataProvider {
+        @NotNull
+        @Override
+        public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity tileEntity, NBTTagCompound tag, World world, BlockPos pos) {
+            if (tileEntity instanceof ManaLevelBlock.VoidCase) {
+                ManaLevelBlock.VoidCase voidCase = (ManaLevelBlock.VoidCase) tileEntity;
+                tag.setInteger("VoidCaseAmount", voidCase.voidCaseHandler.getStackSize());
+            }
+            return tag;
         }
     }
 

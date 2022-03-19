@@ -1,5 +1,6 @@
 package com.til.abyss_mana_2.common.capability;
 
+import com.til.abyss_mana_2.common.register.ManaLevel;
 import com.til.abyss_mana_2.util.data.AllNBT;
 import com.til.abyss_mana_2.util.extension.Extension;
 import net.minecraft.nbt.NBTBase;
@@ -52,7 +53,7 @@ public interface IClockTime extends INBT {
 
         @Override
         public int getCycleTime() {
-            return iManaLevel.getManaLevel().getClockTime();
+            return Extension.recursionDivision(128 * 20, iManaLevel.getManaLevel().getGenericParadigmMap().get(ManaLevel.level) - 1);
         }
 
         @Override

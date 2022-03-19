@@ -1,0 +1,7 @@
+{
+  "parent": "abyss_mana_2:custom/void_case/void_case",
+  "textures": {
+    "missing": "abyss_mana_2:block/white_0",
+    "particle": "abyss_mana_2:block/white"
+  }
+}

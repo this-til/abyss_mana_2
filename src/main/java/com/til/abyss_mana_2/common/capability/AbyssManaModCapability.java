@@ -1,5 +1,6 @@
 package com.til.abyss_mana_2.common.capability;
 
+import com.til.abyss_mana_2.util.data.AllNBT;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -38,7 +39,11 @@ public class AbyssManaModCapability implements ICapabilityProvider, INBTSerializ
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        return (T) map.get(capability);
+        Object o = map.get(capability);
+        if (o instanceof ICapabilityCallback) {
+            ((ICapabilityCallback) o).run();
+        }
+        return (T) o;
     }
 
     @Override
@@ -46,7 +51,10 @@ public class AbyssManaModCapability implements ICapabilityProvider, INBTSerializ
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
         for (INBT inbt : inbtSerializables) {
             if (inbt != null) {
-                inbt.getNBTBase().set(nbtTagCompound, inbt.serializeNBT());
+                AllNBT.IGS<NBTBase> igs = inbt.getNBTBase();
+                if (igs != null) {
+                    igs.set(nbtTagCompound, inbt.serializeNBT());
+                }
             }
         }
         return nbtTagCompound;
@@ -56,8 +64,11 @@ public class AbyssManaModCapability implements ICapabilityProvider, INBTSerializ
     public void deserializeNBT(NBTTagCompound nbt) {
         for (INBT inbt : inbtSerializables) {
             if (inbt != null) {
-                NBTBase nbtBase = inbt.getNBTBase().get(nbt);
-                inbt.deserializeNBT(nbtBase instanceof NBTTagCompound ? (NBTTagCompound) nbtBase : new NBTTagCompound());
+                AllNBT.IGS<NBTBase> igs = inbt.getNBTBase();
+                if (igs != null) {
+                    NBTBase nbtBase = igs.get(nbt);
+                    inbt.deserializeNBT(nbtBase instanceof NBTTagCompound ? (NBTTagCompound) nbtBase : new NBTTagCompound());
+                }
             }
         }
     }

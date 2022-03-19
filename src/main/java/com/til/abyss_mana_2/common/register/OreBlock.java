@@ -4,6 +4,7 @@ import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.AllBlock;
 import com.til.abyss_mana_2.common.ModTab;
 import com.til.abyss_mana_2.common.event.ModEvent;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -20,12 +21,12 @@ public class OreBlock extends RegisterBasics<OreBlock> {
 
     public static IForgeRegistry<OreBlock> register = null;
 
-    public OreBlock(String name) {
-        this(new ResourceLocation(AbyssMana2.MODID, name));
+    public OreBlock(String name, GenericParadigmMap genericParadigmMap) {
+        this(new ResourceLocation(AbyssMana2.MODID, name), genericParadigmMap);
     }
 
-    public OreBlock(ResourceLocation resourceLocation) {
-        super(resourceLocation);
+    public OreBlock(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     public Block getBlock(Ore ore) {
@@ -43,9 +44,12 @@ public class OreBlock extends RegisterBasics<OreBlock> {
     }
 
     public static class OreMineral extends OreBlock {
-        public OreMineral(String name) {
-            super(name);
-            setOrePrefix("ore");
+        public OreMineral(String name, GenericParadigmMap genericParadigmMap) {
+            super(name, genericParadigmMap);
+        }
+
+        public OreMineral(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+            super(resourceLocation, genericParadigmMap);
         }
     }
 
@@ -64,8 +68,10 @@ public class OreBlock extends RegisterBasics<OreBlock> {
     public static OreBlock bracket;
 
     public static void init() {
-        lordWorld = new OreMineral("lord_world");
-        lordWorldSand = new OreMineral("lord_world_sand") {
+        lordWorld = new OreMineral("lord_world", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore"));
+        lordWorldSand = new OreMineral("lord_world_sand", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore")) {
             @Override
             public Block getBlock(Ore ore) {
                 String name = Objects.requireNonNull(getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(ore.getRegistryName()).getResourcePath();
@@ -73,24 +79,29 @@ public class OreBlock extends RegisterBasics<OreBlock> {
 
             }
         };
-        lordWorldDirt = new OreMineral("lord_world_dirt") {
+        lordWorldDirt = new OreMineral("lord_world_dirt", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore")) {
             @Override
             public Block getBlock(Ore ore) {
                 String name = Objects.requireNonNull(getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(ore.getRegistryName()).getResourcePath();
                 return new AllBlock.ModBlock(Material.ROCK, MapColor.BLACK, SoundType.STONE, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "shovel", 2, 2.25f, 12);
             }
         };
-        lordWorldGravel = new OreMineral("lord_world_gravel") {
+        lordWorldGravel = new OreMineral("lord_world_gravel", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore")) {
             @Override
             public Block getBlock(Ore ore) {
                 String name = Objects.requireNonNull(getRegistryName()).getResourcePath() + "_" + Objects.requireNonNull(ore.getRegistryName()).getResourcePath();
                 return new AllBlock.ModBlock(Material.GROUND, MapColor.BLACK, SoundType.GROUND, ModTab.TAB, new ResourceLocation(AbyssMana2.MODID, name), "shovel", 2, 2.25f, 12);
             }
         };
-        netherWorldNetherrack = new OreMineral("nether_world_netherrack");
-        endWorldEndStone = new OreMineral("end_world_end_stone");
+        netherWorldNetherrack = new OreMineral("nether_world_netherrack", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore"));
+        endWorldEndStone = new OreMineral("end_world_end_stone", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ore"));
 
-        block = new OreBlock("block") {
+        block = new OreBlock("block", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "block")) {
             @Override
             public int getLayer() {
                 return 0;
@@ -101,12 +112,13 @@ public class OreBlock extends RegisterBasics<OreBlock> {
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
                     registerOreRecipe(getRecipeNameOfAToB(OreType.ingot, ore, this, ore), new ItemStack(ore.block.get(this)),
-                            "AAA", "AAA", "AAA", 'A', getOreString(this, ore));
+                            "AAA", "AAA", "AAA", 'A', getOreString(OreType.ingot, ore));
                 }
             }
 
         };
-        bracket = new OreBlock("bracket") {
+        bracket = new OreBlock("bracket", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "bracket")) {
             @Override
             public int getLayer() {
                 return 0;

@@ -75,7 +75,6 @@ public class AllBlock {
             return false;
         }
 
-
         @SideOnly(Side.CLIENT)
         @Override
         public BlockRenderLayer getBlockLayer() {

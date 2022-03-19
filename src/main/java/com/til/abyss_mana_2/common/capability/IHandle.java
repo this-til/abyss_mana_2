@@ -18,7 +18,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -57,7 +56,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
          */
         public List<ShapedHandle> shapedHandles = new List<>();
 
-        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, List<BindType> bindTypes , IControl iControl, IManaLevel iManaLevel, IClockTime iClockTime) {
+        public Handle(TileEntity tileEntity, List<ShapedType> shapedTypes, List<BindType> bindTypes, IControl iControl, IManaLevel iManaLevel, IClockTime iClockTime) {
             this.shapedTypes = shapedTypes;
             this.tileEntity = tileEntity;
             this.iControl = iControl;
@@ -178,7 +177,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
 
         @Override
         public int getParallelHandle() {
-            return getManaLevel().getLevel();
+            return getManaLevel().getGenericParadigmMap().get(ManaLevel.level);
         }
 
         /***
@@ -320,8 +319,7 @@ public interface IHandle extends IControl, INBT, IThis<TileEntity>, ITickable, I
                 for (NBTBase nbtBase : nbtTagCompound.getTagList("outFuid", 10)) {
                     if (nbtBase instanceof NBTTagCompound) {
                         NBTTagCompound _n = (NBTTagCompound) nbtBase;
-                        FluidStack fluidStack = new FluidStack(FluidRegistry.getFluid(_n.getString("FluidName")), _n.getInteger("Amount"),
-                                _n.hasKey("Tag") ? _n.getCompoundTag("Tag").getSize() > 0 ? _n.getCompoundTag("Tag") : null : null);
+                        FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(_n);
                         if (fluidStack.getFluid() != null && fluidStack.amount > 0) {
                             outFuid.add(fluidStack);
                         }

@@ -3,6 +3,7 @@ package com.til.abyss_mana_2.common.register;
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.client.util.Lang;
 import com.til.abyss_mana_2.common.ModTab;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -16,8 +17,8 @@ public class ManaLevelItem extends RegisterBasics<ManaLevelItem> {
 
     public static IForgeRegistry<ManaLevelItem> register = null;
 
-    public ManaLevelItem(String name) {
-        this(new ResourceLocation(AbyssMana2.MODID, name));
+    public ManaLevelItem(String name, GenericParadigmMap genericParadigmMap) {
+        this(new ResourceLocation(AbyssMana2.MODID, name), genericParadigmMap);
     }
 
     public Item getItem(ManaLevel manaLevel) {
@@ -44,8 +45,8 @@ public class ManaLevelItem extends RegisterBasics<ManaLevelItem> {
         event.getRegistry().register(this);
     }
 
-    public ManaLevelItem(ResourceLocation resourceLocation) {
-        super(resourceLocation);
+    public ManaLevelItem(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     /***
@@ -56,7 +57,7 @@ public class ManaLevelItem extends RegisterBasics<ManaLevelItem> {
     /***
      * 棱镜
      */
-    public static ManaLevelItem lens;
+    // public static ManaLevelItem lens;
 
     public static ManaLevelItem cpu;
 
@@ -67,11 +68,17 @@ public class ManaLevelItem extends RegisterBasics<ManaLevelItem> {
     public static ManaLevelItem io;
 
     public static void init() {
-        lens = (ManaLevelItem) new ManaLevelItem("lens").setOrePrefix("Lens");
-        controlCrystal = (ManaLevelItem) new ManaLevelItem("control_crystal").setOrePrefix("ControlCrystal");
-        cpu = (ManaLevelItem) new ManaLevelItem("cpu").setOrePrefix("CPU");
-        ram = (ManaLevelItem) new ManaLevelItem("ram").setOrePrefix("RAM");
-        rom = (ManaLevelItem) new ManaLevelItem("rom").setOrePrefix("ROM");
-        io = (ManaLevelItem) new ManaLevelItem("io").setOrePrefix("IO");
+  /*      lens = new ManaLevelItem("lens", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "Lens"));*/
+        controlCrystal = new ManaLevelItem("control_crystal", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ControlCrystal"));
+        cpu = new ManaLevelItem("cpu", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "CPU"));
+        ram = new ManaLevelItem("ram", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "RAM"));
+        rom = new ManaLevelItem("rom", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "ROM"));
+        io = new ManaLevelItem("io", new GenericParadigmMap()
+                .put_genericParadigm(orePrefix, "IO"));
     }
 }

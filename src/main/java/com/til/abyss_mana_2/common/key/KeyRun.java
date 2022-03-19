@@ -9,7 +9,6 @@ import com.til.abyss_mana_2.util.data.AllNBT;
 import com.til.abyss_mana_2.util.data.message.key_message.KeyMessage;
 import com.til.abyss_mana_2.util.data.message.player_message.PlayerMessage;
 import com.til.abyss_mana_2.util.extension.Extension;
-import com.til.abyss_mana_2.util.extension.List;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,7 +16,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.awt.*;
@@ -61,6 +59,7 @@ public enum KeyRun implements Extension.Action_2V<KeyMessage.Message, MessageCon
                             nbtTagCompound.setString("type", Objects.requireNonNull(bindType.getRegistryName()).toString());
                             AllNBT.playerMessage.upDataToPlayerCLIENT(
                                     new PlayerMessage.MessageData(true, "已经绑定类型切换至——{0}.name", bindType.getRegistryName().toString()), entityPlayerMP);
+                            return;
                         }
                     }
                     AllNBT.playerMessage.upDataToPlayerCLIENT(new PlayerMessage.MessageData(true, "请先绑定主绑定方块.name"), entityPlayerMP);

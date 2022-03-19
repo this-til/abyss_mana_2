@@ -21,6 +21,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +60,35 @@ public class Hwyla_interact {
                     manaLevel = ManaLevel.T1;
                 }
                 tooltip.add(Lang.getLang("mana.level") + Lang.getLang(manaLevel));
+            }
+
+            if (nbtTagCompound.hasKey("itemHandler")) {
+                NBTTagList itemHandler = nbtTagCompound.getTagList("itemHandler", 10);
+                tooltip.add(Lang.getLang("item.handler"));
+                for (NBTBase nbtBase : itemHandler) {
+                    ItemStack _stack = new ItemStack((NBTTagCompound) nbtBase);
+                    if (nbtTagCompound.hasKey("VoidCaseAmount")) {
+                        int c = nbtTagCompound.getInteger("VoidCaseAmount");
+                        if (c <= 0) {
+                            continue;
+                        }
+                        tooltip.add("   " + _stack.getDisplayName() + "   x" + c);
+                    } else {
+                        tooltip.add("   " + _stack.getDisplayName() + "   x" + _stack.getCount());
+                    }
+
+                }
+            }
+
+            if (nbtTagCompound.hasKey("iFluidHandler")) {
+                NBTTagList itemHandler = nbtTagCompound.getTagList("iFluidHandler", 10);
+                tooltip.add(Lang.getLang("fluid.handler"));
+                for (NBTBase nbtBase : itemHandler) {
+                    FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) nbtBase);
+                    if (fluidStack != null) {
+                        tooltip.add("   " + I18n.format(fluidStack.getUnlocalizedName()) + "   x" + fluidStack.amount);
+                    }
+                }
             }
 
             if (nbtTagCompound.hasKey("iClockTime")) {
@@ -137,7 +167,7 @@ public class Hwyla_interact {
             if (nbtTagCompound.hasKey("iManaHandle")) {
                 NBTTagCompound iManaHandle = nbtTagCompound.getCompoundTag("iManaHandle");
                 tooltip.add(Lang.getLang("mana.handel"));
-                if (iManaHandle.hasKey("now") || (iManaHandle.hasKey("max") && iManaHandle.getLong("max") > 0)) {
+                if ((iManaHandle.getLong("max") > 0) && (iManaHandle.getLong("max") > 0)) {
                     tooltip.add("   " + MessageFormat.format(Lang.getLang("now.mana.handel"), iManaHandle.getLong("now"), iManaHandle.getLong("max")));
                 }
                 tooltip.add("   " + Lang.getLang("rate.mana.handel") + iManaHandle.getLong("rate"));

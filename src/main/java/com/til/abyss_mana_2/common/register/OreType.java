@@ -4,6 +4,7 @@ import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.client.util.Lang;
 import com.til.abyss_mana_2.common.ModTab;
 import com.til.abyss_mana_2.common.event.ModEvent;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -18,37 +19,13 @@ public class OreType extends RegisterBasics<OreType> {
 
     public static IForgeRegistry<OreType> register = null;
 
-    /***
-     * 保留大写
-     */
-    protected String orePrefix;
-
-    public OreType(String name) {
-        this(new ResourceLocation(AbyssMana2.MODID, name));
+    public OreType(String name, GenericParadigmMap genericParadigmMap) {
+        this(new ResourceLocation(AbyssMana2.MODID, name), genericParadigmMap);
     }
 
 
-    public OreType(ResourceLocation resourceLocation) {
-        super(resourceLocation);
-    }
-
-    /***
-     * 获取ore前缀
-     */
-    public String getOrePrefix() {
-        if (orePrefix.isEmpty()) {
-            ResourceLocation resourceLocation = getRegistryName();
-            if (resourceLocation != null) {
-                orePrefix = resourceLocation.getResourcePath();
-                return orePrefix;
-            }
-        }
-        return orePrefix;
-    }
-
-    public OreType setOreType(String orePrefix) {
-        this.orePrefix = orePrefix;
-        return this;
+    public OreType(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     public Item getItem(Ore ore) {
@@ -144,7 +121,7 @@ public class OreType extends RegisterBasics<OreType> {
     public static OreType paper;
 
     public static void init() {
-        ingot = new OreType("ingot") {
+        ingot = new OreType("ingot", new GenericParadigmMap().put_genericParadigm(orePrefix, "ingot")) {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
@@ -163,9 +140,9 @@ public class OreType extends RegisterBasics<OreType> {
                 }
             }
 
-        }.setOreType("ingot");
-        infiltrationIngot = new OreType("infiltration_ingot").setOreType("infiltrationIngot");
-        nuggets = new OreType("nuggets") {
+        };
+        infiltrationIngot = new OreType("infiltration_ingot", new GenericParadigmMap().put_genericParadigm(orePrefix, "infiltrationIngot"));
+        nuggets = new OreType("nuggets", new GenericParadigmMap().put_genericParadigm(orePrefix, "nuggets")) {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
@@ -174,10 +151,10 @@ public class OreType extends RegisterBasics<OreType> {
                             "A  ", "   ", "   ", 'A', getOreString(ingot, ore));
                 }
             }
-        }.setOreType("nuggets");
-        crushedPurified = new OreType("crushed_purified").setOreType("crushedPurified");
-        crushed = new OreType("crushed").setOreType("crushed");
-        dust = new OreType("dust") {
+        };
+        crushedPurified = new OreType("crushed_purified", new GenericParadigmMap().put_genericParadigm(orePrefix, "crushedPurified"));
+        crushed = new OreType("crushed", new GenericParadigmMap().put_genericParadigm(orePrefix, "crushed"));
+        dust = new OreType("dust", new GenericParadigmMap().put_genericParadigm(orePrefix, "dust")) {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
@@ -186,9 +163,9 @@ public class OreType extends RegisterBasics<OreType> {
                             "AAA", "AAA", "AAA", 'A', getOreString(dustTiny, ore));
                 }
             }
-        }.setOreType("dust");
-        infiltrationDust = new OreType("infiltration_dust").setOreType("infiltrationDust");
-        dustTiny = new OreType("dust_tiny") {
+        };
+        infiltrationDust = new OreType("infiltration_dust", new GenericParadigmMap().put_genericParadigm(orePrefix, "infiltrationDust"));
+        dustTiny = new OreType("dust_tiny", new GenericParadigmMap().put_genericParadigm(orePrefix, "dustTiny")) {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
                 for (Ore ore : Ore.register) {
@@ -197,11 +174,11 @@ public class OreType extends RegisterBasics<OreType> {
                             "A  ", "   ", "   ", 'A', getOreString(dust, ore));
                 }
             }
-        }.setOreType("dustTiny");
-        sublimation = new OreType("sublimation").setOreType("sublimation");
-        crystal = new OreType("crystal").setOreType("crystal");
+        };
+        sublimation = new OreType("sublimation", new GenericParadigmMap().put_genericParadigm(orePrefix, "sublimation"));
+        crystal = new OreType("crystal", new GenericParadigmMap().put_genericParadigm(orePrefix, "crystal"));
         // lens = new OreType("lens").setOreType("lens");
-        string = new OreType("string").setOreType("string");
-        paper = new OreType("paper").setOreType("paper");
+        string = new OreType("string", new GenericParadigmMap().put_genericParadigm(orePrefix, "string"));
+        paper = new OreType("paper", new GenericParadigmMap().put_genericParadigm(orePrefix, "paper"));
     }
 }

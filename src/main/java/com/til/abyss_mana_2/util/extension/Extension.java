@@ -63,4 +63,11 @@ public class Extension {
         }
     }
 
+    public static int recursionDivision(int basic, int r){
+        for (int i = 0; i < r; i++) {
+            basic /= 2;
+        }
+        return basic;
+    }
+
 }

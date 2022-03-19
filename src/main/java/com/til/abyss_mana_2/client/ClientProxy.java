@@ -123,39 +123,92 @@ public class ClientProxy extends CommonProxy {
         for (Ore ore : Ore.register) {
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 OreType oreType = ore.item.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? ore.color.getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? ore.getGenericParadigmMap().get(Ore.color).getRGB() : -1 : -1;
             }, ore.item.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 OreBlock oreType = ore.itemBlock.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? ore.color.getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? ore.getGenericParadigmMap().get(Ore.color).getRGB() : -1 : -1;
             }, ore.itemBlock.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
                 OreBlock oreType = ore.block.getKey(state.getBlock());
-                return oreType != null ? oreType.getLayer() == tintIndex ? ore.color.getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? ore.getGenericParadigmMap().get(Ore.color).getRGB() : -1 : -1;
             }, ore.block.values().toArray(new Block[0]));
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 OreFluid oreType = ore.fluidItem.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? ore.color.getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? ore.getGenericParadigmMap().get(Ore.color).getRGB() : -1 : -1;
             }, ore.fluidItem.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
                 OreFluid oreType = ore.fluidBlock.getKey(state.getBlock());
-                return oreType != null ? oreType.getLayer() == tintIndex ? ore.color.getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? ore.getGenericParadigmMap().get(Ore.color).getRGB() : -1 : -1;
             }, ore.fluidBlock.values().toArray(new Block[0]));
+
+           /* Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+                OreFluid oreType = ore.fluidItem.getKey(stack.getItem());
+                return oreType != null ? oreType.getLayer() == tintIndex ? new Color(255, 0, 0, 125).getRGB() : -1 : -1;
+            }, ore.fluidItem.get(OreFluid.chargingRedstoneSolution));
+            Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+                OreFluid oreType = ore.fluidBlock.getKey(state.getBlock());
+                return oreType != null ? oreType.getLayer() == tintIndex ? new Color(255, 0, 0, 125).getRGB() : -1 : -1;
+            }, ore.fluidBlock.get(OreFluid.chargingRedstoneSolution));
+
+            Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+                OreFluid oreType = ore.fluidItem.getKey(stack.getItem());
+                return oreType != null ? oreType.getLayer() == tintIndex ? new Color(4, 43, 173, 125).getRGB() : -1 : -1;
+            }, ore.fluidItem.get(OreFluid.manaSolution));
+            Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+                OreFluid oreType = ore.fluidBlock.getKey(state.getBlock());
+                return oreType != null ? oreType.getLayer() == tintIndex ? new Color(4, 43, 173, 125).getRGB() : -1 : -1;
+            }, ore.fluidBlock.get(OreFluid.manaSolution));*/
+
         }
 
         for (ManaLevel manaLevel : ManaLevel.register) {
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 ManaLevelItem oreType = manaLevel.item.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
             }, manaLevel.item.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
                 ManaLevelBlock oreType = manaLevel.itemBlock.getKey(stack.getItem());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
             }, manaLevel.itemBlock.values().toArray(new Item[0]));
             Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
                 ManaLevelBlock oreType = manaLevel.block.getKey(state.getBlock());
-                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getColor().getRGB() : -1 : -1;
+                return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
             }, manaLevel.block.values().toArray(new Block[0]));
+
+            {
+                Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+                    ManaLevelItem oreType = manaLevel.item.getKey(stack.getItem());
+                    if (tintIndex == 1) {
+                        return new Color(34, 43, 197).getRGB();
+                    }
+                    return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
+                }, manaLevel.itemBlock.get(ManaLevelBlock.moonlight));
+                Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+                    ManaLevelBlock oreType = manaLevel.block.getKey(state.getBlock());
+                    if (tintIndex == 1) {
+                        return new Color(34, 43, 197).getRGB();
+                    }
+                    return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
+                }, manaLevel.block.get(ManaLevelBlock.moonlight));
+            }
+            {
+                Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+                    ManaLevelItem oreType = manaLevel.item.getKey(stack.getItem());
+                    if (tintIndex == 1) {
+                        return new Color(255, 245, 46).getRGB();
+                    }
+                    return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
+                }, manaLevel.itemBlock.get(ManaLevelBlock.sunlight));
+                Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {
+                    ManaLevelBlock oreType = manaLevel.block.getKey(state.getBlock());
+                    if (tintIndex == 1) {
+                        return new Color(255, 245, 46).getRGB();
+                    }
+                    return oreType != null ? oreType.getLayer() == tintIndex ? manaLevel.getGenericParadigmMap().get(ManaLevel.color).getRGB() : -1 : -1;
+                }, manaLevel.block.get(ManaLevelBlock.sunlight));
+            }
+
         }
 
         for (ShapedDrive shapedDrive : ShapedDrive.register) {
@@ -234,11 +287,12 @@ public class ClientProxy extends CommonProxy {
                         if (Objects.equals(entry.getValue().getRegistryName(), modelLocation)) {
                             ResourceLocation name = Objects.requireNonNull(entry.getKey().getRegistryName());
                             if (modelLocation instanceof ModelResourceLocation) {
-                                ModelResourceLocation modelResourceLocation = (ModelResourceLocation)modelLocation;
+                                ModelResourceLocation modelResourceLocation = (ModelResourceLocation) modelLocation;
                                 if (!modelResourceLocation.getVariant().equals("normal")) {
-                                    return ModelLoaderRegistry.getModel(new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(),  name.getResourcePath()), modelResourceLocation.getVariant()));
+                                    return ModelLoaderRegistry.getModel(new ModelResourceLocation(new ResourceLocation(name.getResourceDomain(), name.getResourcePath()), modelResourceLocation.getVariant()));
                                 }
-                            } return ModelLoaderRegistry.getModel(new ResourceLocation(name.getResourceDomain(), "block/" + name.getResourcePath()));
+                            }
+                            return ModelLoaderRegistry.getModel(new ResourceLocation(name.getResourceDomain(), "block/" + name.getResourcePath()));
                         }
                     }
                 }
@@ -273,7 +327,7 @@ public class ClientProxy extends CommonProxy {
         });
     }
 
-    public void registerKey(){
+    public void registerKey() {
         AllKey.init();
     }
 

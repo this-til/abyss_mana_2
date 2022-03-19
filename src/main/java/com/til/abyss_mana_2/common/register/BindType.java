@@ -4,6 +4,7 @@ import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.capability.AllCapability;
 import com.til.abyss_mana_2.common.capability.IManaHandle;
 import com.til.abyss_mana_2.common.capability.IShapedDrive;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.RegistryEvent;
@@ -25,7 +26,7 @@ public class BindType extends RegisterBasics<BindType> {
     }
 
     public BindType(ResourceLocation resourceLocation) {
-        super(resourceLocation);
+        super(resourceLocation, new GenericParadigmMap());
     }
 
     @SubscribeEvent

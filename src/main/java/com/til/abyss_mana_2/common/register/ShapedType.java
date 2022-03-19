@@ -2,6 +2,7 @@ package com.til.abyss_mana_2.common.register;
 
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.common.event.ModEvent;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import com.til.abyss_mana_2.util.extension.List;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.Objects;
+
 public class ShapedType extends RegisterBasics<ShapedType> {
 
     public static IForgeRegistry<ShapedType> register = null;
@@ -19,7 +22,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
     protected String orePrefix;
 
     public ShapedType(String name) {
-        this(new ResourceLocation(AbyssMana2.MODID, name));
+        this(new ResourceLocation(AbyssMana2.MODID, name), new GenericParadigmMap());
     }
 
     public String getOrePrefix() {
@@ -38,8 +41,8 @@ public class ShapedType extends RegisterBasics<ShapedType> {
         return this;
     }
 
-    public ShapedType(ResourceLocation resourceLocation) {
-        super(resourceLocation);
+    public ShapedType(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     public ManaLevelBlock getJEIBlock() {
@@ -130,6 +133,27 @@ public class ShapedType extends RegisterBasics<ShapedType> {
      * 结晶
      */
     public static ShapedType crystallizing;
+
+    /***
+     * 晶体雕刻
+     */
+    public static ShapedType carving;
+
+    /***
+     * 高炉
+     */
+    public static ShapedType blastFurnace;
+
+
+    /***
+     * uu生成
+     */
+    public static ShapedType uuGenerate;
+
+    /***
+     * 质量生成
+     */
+    public static ShapedType qualityGenerate;
 
     public static void init() {
         grind = new ShapedType("grind") {
@@ -481,7 +505,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             ManaLevel.T1,
                             this,
                             ShapedDrive.map.get(3),
-                            new Map<String, Integer>().put_chainable(getOreString(OreBlock.block, ore), 1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.dust, ore), 1),
                             new Map<>(),
                             ore.surplusTiem() / 10,
                             ore.consumeMana() / 10,
@@ -530,6 +554,17 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                     Shaped.register.register(shaped);
                 }
             }
+
+
+            @SubscribeEvent
+            public void _onEvent(ModEvent.ModEventLoad.init event) {
+
+                /*Shaped.sunlight = new Shaped.ShapedOre(
+                        new ResourceLocation(AbyssMana2.MODID, "to_" + getOreString(ManaLevel.T1, ManaLevelBlock.sunlight)),
+
+                );*/
+            }
+
         };
         stampingMachine = new ShapedType("stamping_machine") {
 
@@ -575,7 +610,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             ore.surplusTiem() * 6,
                             ore.consumeMana(),
                             0,
-                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.string), 2)),
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.string), 16)),
                             null);
                     Shaped.register.register(shaped);
                 }
@@ -589,8 +624,8 @@ public class ShapedType extends RegisterBasics<ShapedType> {
         manaCoagulation = new ShapedType("mana_coagulation") {
             @SubscribeEvent
             public void onEvent(ModEvent.ModEventLoad.init event) {
-                Shaped.extractMana = new Shaped.ShapedOre(
-                        "mana_to_" + getOreString(OreFluid.solution, Ore.solidMana),
+                Shaped shaped = new Shaped.ShapedOre(
+                        new ResourceLocation(AbyssMana2.MODID, "mana_to_" + getOreString(OreFluid.solution, Ore.solidMana)),
                         ManaLevel.T1,
                         this,
                         ShapedDrive.map.get(1),
@@ -601,7 +636,8 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                         0,
                         null,
                         new List<FluidStack>().add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 100)));
-                Shaped.register.register(Shaped.extractMana);
+                Shaped.register.register(shaped);
+                Shaped.extractMana = shaped;
             }
 
             @Override
@@ -713,6 +749,29 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 }
             }
 
+            @SubscribeEvent
+            public void _onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    if (ore == Ore.solidMana) {
+                        continue;
+                    }
+                    Shaped shaped = new Shaped.ShapedOre(
+                            new ResourceLocation(AbyssMana2.MODID, "to_" + getOreString(OreFluid.chargingRedstoneSolution, ore)),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(2),
+                            new Map<String, Integer>().put_chainable("alloyBasic", 1),
+                            new Map<String, Integer>().put_chainable(ore.fluid.get(OreFluid.solution).getName(), 10),
+                            ore.surplusTiem() * 12,
+                            ore.consumeMana(),
+                            0,
+                            null,
+                            new List<FluidStack>().add_chainable(new FluidStack(ore.fluid.get(OreFluid.chargingRedstoneSolution), 10))
+                    );
+                    Shaped.register.register(shaped);
+                }
+            }
+
 
             @Override
             public ManaLevelBlock getJEIBlock() {
@@ -793,8 +852,8 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             0,
                             null,
                             new List<FluidStack>()
-                                    .add_chainable(new FluidStack(ore.fluid.get(OreFluid.solution), 144))
-                                    .add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 144))
+                                    .add_chainable(new FluidStack(ore.fluid.get(OreFluid.solution), 72))
+                                    .add_chainable(new FluidStack(Ore.solidMana.fluid.get(OreFluid.solution), 72))
                     );
                     Shaped.register.register(shaped);
                 }
@@ -852,7 +911,7 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                             ShapedDrive.map.get(1),
                             new Map<String, Integer>().put_chainable(getOreString(OreType.sublimation, ore), 1),
                             new Map<>(),
-                            ore.surplusTiem() * 128,
+                            ore.surplusTiem() * 32,
                             ore.consumeMana() / 32,
                             0,
                             new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.crystal))),
@@ -867,5 +926,143 @@ public class ShapedType extends RegisterBasics<ShapedType> {
                 return ManaLevelBlock.crystallizing;
             }
         };
+        carving = new ShapedType("carving") {
+
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.carving;
+            }
+
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+
+                ManaLevelItem[] ups = new ManaLevelItem[]{
+                        ManaLevelItem.cpu,
+                        ManaLevelItem.rom,
+                        ManaLevelItem.ram,
+                        ManaLevelItem.io
+                };
+
+                for (ManaLevel manaLevel : ManaLevel.register) {
+                    ManaLevel up = manaLevel.getGenericParadigmMap().get(ManaLevel.up).func();
+                    if (up != null) {
+
+                        int i = 1;
+                        for (ManaLevelItem manaLevelItem : ups) {
+                            Map<String, Integer> inItem = new Map<>();
+                            {
+                                inItem.put(getOreString(up, manaLevelItem), 1);
+                            }
+
+                            Map<String, Integer> inFluid = new Map<>();
+                            {
+                                inFluid.putAll(manaLevel.getGenericParadigmMap().get(ManaLevel.carving_fluidIn).func());
+                                for (Ore ore : manaLevel.getGenericParadigmMap().get(ManaLevel.carving_fluidIn_ore).func()) {
+                                    inFluid.put(getOreString(OreFluid.chargingRedstoneSolution, ore), 12);
+                                }
+                            }
+                            Shaped shaped = new Shaped.ShapedOre(
+                                    new ResourceLocation(AbyssMana2.MODID, "to_" + Objects.requireNonNull(manaLevel.item.get(manaLevelItem).getRegistryName()).getResourcePath()),
+                                    up,
+                                    this,
+                                    ShapedDrive.map.get(i),
+                                    inItem,
+                                    inFluid,
+                                    32 * up.getGenericParadigmMap().get(ManaLevel.level),
+                                    100L * up.getGenericParadigmMap().get(ManaLevel.level),
+                                    0,
+                                    new List<ItemStack>().add_chainable(new ItemStack(manaLevel.item.get(manaLevelItem))),
+                                    null
+                            );
+                            Shaped.register.register(shaped);
+                            i++;
+                        }
+                    }
+                }
+
+            }
+        };
+        blastFurnace = new ShapedType("blast_furnace") {
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    Shaped shaped = (new Shaped.ShapedOre(
+                            getRecipeNameOfAToB(OreType.dust, ore, OreType.ingot, ore, "2"),
+                            ore.getManaLevel(),
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<String, Integer>().put_chainable(getOreString(OreType.dust, ore), 1),
+                            new Map<>(),
+                            ore.surplusTiem() / 2,
+                            ore.consumeMana() * 2,
+                            0,
+                            new List<ItemStack>().add_chainable(new ItemStack(ore.item.get(OreType.ingot))),
+                            null
+                    ));
+                    Shaped.register.register(shaped);
+                }
+            }
+
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.blastFurnace;
+            }
+        };
+        uuGenerate = new ShapedType("uu_generate") {
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.uuGenerate;
+            }
+
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                Shaped shaped = new Shaped.ShapedOre(
+                        new ResourceLocation(AbyssMana2.MODID, "to_uu_generate"),
+                        ManaLevel.T3,
+                        this,
+                        ShapedDrive.map.get(1),
+                        new Map<>(),
+                        new Map<>(),
+                        100000,
+                        128L,
+                        0,
+                        null,
+                        new List<FluidStack>().add_chainable(new FluidStack(Ore.uu.fluid.get(OreFluid.solution), 1))
+                );
+                Shaped.register.register(shaped);
+            }
+        };
+        qualityGenerate = new ShapedType("quality_generate") {
+            @Override
+            public ManaLevelBlock getJEIBlock() {
+                return ManaLevelBlock.qualityGenerate;
+            }
+
+            @SubscribeEvent
+            public void onEvent(ModEvent.ModEventLoad.init event) {
+                for (Ore ore : Ore.register) {
+                    ManaLevel next = ore.getManaLevel().getGenericParadigmMap().get(ManaLevel.next).func();
+                    if (ore.equals(Ore.uu) || next == null) {
+                        continue;
+                    }
+                    Shaped shaped = new Shaped.ShapedOre(
+                            new ResourceLocation(AbyssMana2.MODID, "to_" + getOreString(OreFluid.solution, ore)),
+                            next,
+                            this,
+                            ShapedDrive.map.get(1),
+                            new Map<>(),
+                            new Map<String, Integer>().put_chainable(ore.fluid.get(OreFluid.uuSolution).getName(), 1),
+                            ore.surplusTiem() * 20,
+                            ore.consumeMana(),
+                            0,
+                            null,
+                            new List<FluidStack>().add_chainable(new FluidStack(ore.fluid.get(OreFluid.solution), 144))
+                    );
+
+                }
+            }
+
+        };
+
     }
 }

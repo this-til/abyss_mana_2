@@ -3,7 +3,7 @@ package com.til.abyss_mana_2.common.register;
 import com.til.abyss_mana_2.AbyssMana2;
 import com.til.abyss_mana_2.client.util.Lang;
 import com.til.abyss_mana_2.common.ModTab;
-import com.til.abyss_mana_2.util.extension.List;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -33,52 +33,50 @@ public class Ore extends RegisterBasics<Ore> {
     public Map<OreFluid, Fluid> fluid = new Map<>();
     public Map<OreFluid, Block> fluidBlock = new Map<>();
     public Map<OreFluid, Item> fluidItem = new Map<>();
-    public Color color;
 
-    public Ore(String name, String ore, Color color) {
-        this(new ResourceLocation(AbyssMana2.MODID, name), ore, color);
+
+    public Ore(String name, GenericParadigmMap genericParadigmMap) {
+        this(new ResourceLocation(AbyssMana2.MODID, name), genericParadigmMap);
     }
 
-    public Ore(ResourceLocation resourceLocation, String ore, Color color) {
-        super(resourceLocation);
-        setOrePrefix(ore);
-        this.color = color;
+    public Ore(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     /***
      * 获取需要处理矿石的等级
      */
     public ManaLevel getManaLevel() {
-        return ManaLevel.T1;
+        return getGenericParadigmMap().get(manaLevel).func();
     }
 
     /***
      * 获取处理所需时间
      */
     public int surplusTiem() {
-        return 32 * 20;
+        return getGenericParadigmMap().get(surplusTiem);
     }
 
     /***
      * 获取处理时毎刻所需灵气
      */
     public long consumeMana() {
-        return 32L;
+        return getGenericParadigmMap().get(consumeMana);
     }
 
     /***
      * 获得单位矿内部所含灵气
      */
     public long getHasMana() {
-        return 1200;
+        return getGenericParadigmMap().get(hasMana);
     }
 
-    public List<Ore> getAdditionalOutputOfWash() {
-        return new List<Ore>().add_chainable(this);
+    public Ore[] getAdditionalOutputOfWash() {
+        return getGenericParadigmMap().get(additionalOutputOfWash).func();
     }
 
-    public List<Ore> getAdditionalOutputOfCentrifugal() {
-        return new List<Ore>().add_chainable(this);
+    public Ore[] getAdditionalOutputOfCentrifugal() {
+        return getGenericParadigmMap().get(additionalOutputOfCentrifugal).func();
     }
 
     @SubscribeEvent
@@ -109,6 +107,7 @@ public class Ore extends RegisterBasics<Ore> {
             Fluid fluid = oreFluid.getFluid(this);
             FluidRegistry.registerFluid(fluid);
             FluidRegistry.addBucketForFluid(fluid);
+            this.fluid.put(oreFluid, fluid);
             ResourceLocation fluidName = new ResourceLocation(AbyssMana2.MODID, fluid.getName());
             BlockFluidClassic blockFluidClassic = (BlockFluidClassic) new BlockFluidClassic(fluid, Material.WATER)
                     .setRegistryName(fluidName)
@@ -117,7 +116,6 @@ public class Ore extends RegisterBasics<Ore> {
                     .setRegistryName(fluidName)
                     .setUnlocalizedName(AbyssMana2.MODID + "." + fluidName.getResourcePath())
                     .setCreativeTab(ModTab.TAB);
-            this.fluid.put(oreFluid, fluid);
             this.fluidBlock.put(oreFluid, blockFluidClassic);
             this.fluidItem.put(oreFluid, itemBlock);
             GameData.register_impl(blockFluidClassic);
@@ -179,6 +177,21 @@ public class Ore extends RegisterBasics<Ore> {
     public static Ore starRiver;
 
     /***
+     * 日耀
+     */
+    public static Ore sunlight;
+
+    /***
+     * 月耀
+     */
+    public static Ore moonlight;
+
+    /***
+     * uu
+     */
+    public static Ore uu;
+
+    /***
      * 猫
      */
     public static Ore cat;
@@ -199,156 +212,177 @@ public class Ore extends RegisterBasics<Ore> {
     public static Ore DHB;
 
     public static void init() {
-        solidMana = new Ore("solid_mana", "SolidMana", new Color(16, 51, 148)) {
-            @Override
-            public long getHasMana() {
-                return 184320;
-            }
-        };
-        embers = new Ore("embers", "Embers", new Color(190, 190, 190)) {
-            @Override
-            public long getHasMana() {
-                return 0;
-            }
-        };
-        impurity = new Ore("impurity", "Impurity", new Color(45, 45, 45)) {
-            @Override
-            public long getHasMana() {
-                return 200;
-            }
-        };
-        weakMana = new Ore("weak_mana", "WeakMana", new Color(72, 80, 100));
-        nearManaIron = new Ore("near_mana_iron", "NearManaIron", new Color(150, 255, 255)) {
-            @Override
-            public long getHasMana() {
-                return 1600;
-            }
-        };
-        conductionManaIron = new Ore("conduction_mana_iron", "ConductionManaIron", new Color(150, 200, 255)) {
-            @Override
-            public long getHasMana() {
-                return 2200;
-            }
-        };
-        starSilver = new Ore("star_silver", "StarSilver", new Color(216, 215, 234)) {
-            @Override
-            public ManaLevel getManaLevel() {
-                return ManaLevel.T2;
-            }
+        solidMana = new Ore("solid_mana", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(16, 51, 148))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 32 * 20)
+                .put_genericParadigm(hasMana, 184320L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[0])
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[0])
+                .put_genericParadigm(orePrefix, "SolidMana"));
 
-            @Override
-            public long getHasMana() {
-                return 3200;
-            }
+        embers = new Ore("embers", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(190, 190, 190))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 12 * 20)
+                .put_genericParadigm(hasMana, 0L)
+                .put_genericParadigm(consumeMana, 8L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[0])
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[0])
+                .put_genericParadigm(orePrefix, "Embers"))
+        ;
+        impurity = new Ore("impurity", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(45, 45, 45))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 4 * 20)
+                .put_genericParadigm(hasMana, 5000L)
+                .put_genericParadigm(consumeMana, 8L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[0])
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[0])
+                .put_genericParadigm(orePrefix, "Impurity"));
 
-            @Override
-            public int surplusTiem() {
-                return 64 * 20;
-            }
+        weakMana = new Ore("weak_mana", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(150, 255, 255))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 32 * 20)
+                .put_genericParadigm(hasMana, 12000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{nearManaIron, conductionManaIron})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{nearManaIron, conductionManaIron, weakMana, weakMana})
+                .put_genericParadigm(orePrefix, "WeakMana"));
 
-            @Override
-            public long consumeMana() {
-                return 128;
-            }
+        nearManaIron = new Ore("near_mana_iron", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(150, 255, 255))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 32 * 20)
+                .put_genericParadigm(hasMana, 16000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{conductionManaIron, weakMana, weakMana, weakMana})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{conductionManaIron, weakMana})
+                .put_genericParadigm(orePrefix, "NearManaIron"));
 
-            @Override
-            public List<Ore> getAdditionalOutputOfWash() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starIron).add_chainable(starGold).add_chainable(starRiver);
-            }
+        conductionManaIron = new Ore("conduction_mana_iron", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(150, 200, 255))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T1)
+                .put_genericParadigm(surplusTiem, 32 * 20)
+                .put_genericParadigm(hasMana, 32000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{nearManaIron, weakMana, weakMana, weakMana})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{nearManaIron, weakMana})
+                .put_genericParadigm(orePrefix, "ConductionManaIron"));
 
-            @Override
-            public List<Ore> getAdditionalOutputOfCentrifugal() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starIron).add_chainable(starGold).add_chainable(starRiver);
-            }
-        };
-        starIron = new Ore("star_iron", "StarIron", new Color(177, 176, 192)) {
-            @Override
-            public ManaLevel getManaLevel() {
-                return ManaLevel.T2;
-            }
 
-            @Override
-            public long getHasMana() {
-                return 3200;
-            }
+        starSilver = new Ore("star_silver", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(216, 215, 234))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 64 * 20)
+                .put_genericParadigm(hasMana, 42000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{starIron, starGold, starRiver})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{starIron, starGold, starRiver})
+                .put_genericParadigm(orePrefix, "StarSilver"));
 
-            @Override
-            public int surplusTiem() {
-                return 64 * 20;
-            }
+        starIron = new Ore("star_iron", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(177, 176, 192))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 64 * 20)
+                .put_genericParadigm(hasMana, 42000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{starSilver, starGold, starRiver})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{starSilver, starGold, starRiver})
+                .put_genericParadigm(orePrefix, "StarIron"));
 
-            @Override
-            public long consumeMana() {
-                return 128;
-            }
+        starGold = new Ore("star_gold", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(255, 245, 46))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 64 * 20)
+                .put_genericParadigm(hasMana, 42000L)
+                .put_genericParadigm(consumeMana, 32L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{starSilver, starSilver, starRiver})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{starSilver, starSilver, starRiver})
+                .put_genericParadigm(orePrefix, "StarGold"));
 
-            public List<Ore> getAdditionalOutputOfWash() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starSilver).add_chainable(starGold).add_chainable(starRiver);
-            }
+        starRiver = new Ore("star_river", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(65, 105, 225))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{starSilver, starSilver, starRiver})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{starSilver, starSilver, starRiver})
+                .put_genericParadigm(orePrefix, "StarRiver"));
 
-            @Override
-            public List<Ore> getAdditionalOutputOfCentrifugal() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starSilver).add_chainable(starGold).add_chainable(starRiver);
-            }
-        };
-        starGold = new Ore("star_gold", "StarGold", new Color(255, 245, 46)) {
-            @Override
-            public ManaLevel getManaLevel() {
-                return ManaLevel.T2;
-            }
+        sunlight = new Ore("sunlight", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(220, 255, 0))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{moonlight})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{moonlight})
+                .put_genericParadigm(orePrefix, "Sunlight"));
 
-            @Override
-            public long getHasMana() {
-                return 3200;
-            }
+        moonlight = new Ore("moonlight", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(122, 143, 210))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{sunlight})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{sunlight})
+                .put_genericParadigm(orePrefix, "Moonlight"));
 
-            @Override
-            public int surplusTiem() {
-                return 64 * 20;
-            }
-
-            @Override
-            public long consumeMana() {
-                return 128;
-            }
-
-            public List<Ore> getAdditionalOutputOfWash() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starSilver).add_chainable(starSilver).add_chainable(starRiver);
-            }
-
-            @Override
-            public List<Ore> getAdditionalOutputOfCentrifugal() {
-                return super.getAdditionalOutputOfCentrifugal().add_chainable(starSilver).add_chainable(starSilver).add_chainable(starRiver);
-            }
-
-        };
-        starRiver = new Ore("star_river", "StarRiver", new Color(65, 105, 225)) {
-            @Override
-            public ManaLevel getManaLevel() {
-                return ManaLevel.T2;
-            }
-
-            @Override
-            public int surplusTiem() {
-                return 128 * 20;
-            }
-
-            @Override
-            public long getHasMana() {
-                return 12800;
-            }
-
-            @Override
-            public long consumeMana() {
-                return 256;
-            }
-        };
+        uu = new Ore("uu",  new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(28, 1, 77))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T3)
+                .put_genericParadigm(surplusTiem, 20)
+                .put_genericParadigm(hasMana, 14400000000L)
+                .put_genericParadigm(consumeMana, 125L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{})
+                .put_genericParadigm(orePrefix, "UU"));
 
         // other
-        cat = new Ore("cat", "Cat", new Color(240, 240, 240));
-        dog = new Ore("dog", "Gog", new Color(255, 185, 15));
-        voidGlow = new Ore("void_glow", "VoidGlow", new Color(255, 255, 255));
-        DHB = new Ore("dhb", "DHB", new Color(220,230,240));
+        cat = new Ore("cat", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(240, 240, 240))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{})
+                .put_genericParadigm(orePrefix, "Cat"));
+
+        dog = new Ore("dog", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(255, 185, 15))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{})
+                .put_genericParadigm(orePrefix, "Gog"));
+
+        voidGlow = new Ore("void_glow", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(255, 255, 255))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{})
+                .put_genericParadigm(orePrefix, "VoidGlow"));
+
+        DHB = new Ore("dhb", new GenericParadigmMap()
+                .put_genericParadigm(color, new Color(220, 220, 220))
+                .put_genericParadigm(manaLevel, () -> ManaLevel.T2)
+                .put_genericParadigm(surplusTiem, 128 * 20)
+                .put_genericParadigm(hasMana, 124000L)
+                .put_genericParadigm(consumeMana, 64L)
+                .put_genericParadigm(additionalOutputOfWash, () -> new Ore[]{})
+                .put_genericParadigm(additionalOutputOfCentrifugal, () -> new Ore[]{})
+                .put_genericParadigm(orePrefix, "DHB"));
 
     }
 
@@ -361,4 +395,60 @@ public class Ore extends RegisterBasics<Ore> {
 
     public static void initRecipe() {
     }
+
+    /***
+     * 加工需要晶体等级
+     */
+    public static final GenericParadigmMap.IKey<GenericParadigmMap.IKey.KeyManaLevelPack.Pack> manaLevel = new GenericParadigmMap.IKey.KeyManaLevelPack() {
+        @Override
+        public Pack _default() {
+            return () -> ManaLevel.T1;
+        }
+    };
+
+    /***
+     * 加工消耗时间
+     */
+    public static final GenericParadigmMap.IKey<Integer> surplusTiem = new GenericParadigmMap.IKey.KeyInt() {
+        @Override
+        public Integer _default() {
+            return 32 * 20;
+        }
+    };
+
+    /***
+     * 内含灵气
+     */
+    public static final GenericParadigmMap.IKey<Long> hasMana = new GenericParadigmMap.IKey.KeyLang() {
+        @Override
+        public Long _default() {
+            return 12000L;
+        }
+    };
+
+    /***
+     * 加工消耗灵气
+     */
+    public static final GenericParadigmMap.IKey<Long> consumeMana = new GenericParadigmMap.IKey.KeyLang() {
+        @Override
+        public Long _default() {
+            return 32L;
+        }
+    };
+
+    /***
+     * 矿物颜色
+     */
+    public static final GenericParadigmMap.IKey<Color> color = GenericParadigmMap.IKey.KeyColor._default;
+
+    /***
+     * 洗矿额外产出
+     */
+    public static final GenericParadigmMap.IKey<GenericParadigmMap.IKey.KeyOreListPack.Pack> additionalOutputOfWash = new GenericParadigmMap.IKey.KeyOreListPack();
+
+    /***
+     * 离心额外产出
+     */
+    public static final GenericParadigmMap.IKey<GenericParadigmMap.IKey.KeyOreListPack.Pack> additionalOutputOfCentrifugal = new GenericParadigmMap.IKey.KeyOreListPack();
+
 }

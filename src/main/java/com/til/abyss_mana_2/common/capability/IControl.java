@@ -180,7 +180,7 @@ public interface IControl extends INBT, IThis<TileEntity>, IManaLevel {
          */
         @Override
         public int getMaxBind() {
-            return getManaLevel().getMaxBind();
+            return 2 + getManaLevel().getGenericParadigmMap().get(ManaLevel.level) / 2;
         }
 
         /***

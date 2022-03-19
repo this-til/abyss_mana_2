@@ -6,6 +6,7 @@ import com.til.abyss_mana_2.common.ModTab;
 import com.til.abyss_mana_2.common.capability.AllCapability;
 import com.til.abyss_mana_2.common.capability.IShapedDrive;
 import com.til.abyss_mana_2.common.capability.ITileEntityType;
+import com.til.abyss_mana_2.util.extension.GenericParadigmMap;
 import com.til.abyss_mana_2.util.extension.List;
 import com.til.abyss_mana_2.util.extension.Map;
 import net.minecraft.block.Block;
@@ -35,11 +36,11 @@ public class ShapedDrive extends RegisterBasics<ShapedDrive> {
     public ItemBlock itemBlock;
 
     public ShapedDrive(String name) {
-        this(new ResourceLocation(AbyssMana2.MODID, "shaped_drive_" + name));
+        this(new ResourceLocation(AbyssMana2.MODID, "shaped_drive_" + name), new GenericParadigmMap());
     }
 
-    public ShapedDrive(ResourceLocation resourceLocation) {
-        super(resourceLocation);
+    public ShapedDrive(ResourceLocation resourceLocation, GenericParadigmMap genericParadigmMap) {
+        super(resourceLocation, genericParadigmMap);
     }
 
     public int getLayer() {
@@ -85,7 +86,7 @@ public class ShapedDrive extends RegisterBasics<ShapedDrive> {
         }
     }
 
-    public static class ShapedDriveTileEntity extends TileEntity implements ITileEntityType {
+    public static class ShapedDriveTileEntity extends ManaLevelBlock.EmptyTile implements ITileEntityType {
 
         public ShapedDriveTileEntity() {
 
